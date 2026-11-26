@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo Video Generator v2</title>
+  <title>AbbaMend Promo Generator — Web App + Fidelización</title>
   <style>
     body {
       margin: 0;
-      background: #060911;
+      background: #090c10;
       color: #f8fafc;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       display: flex;
@@ -18,12 +18,12 @@
       gap: 16px;
     }
     canvas {
-      height: 74vh;
+      height: 75vh;
       aspect-ratio: 9 / 16;
       border-radius: 24px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
       border: 1px solid #1e293b;
-      background: #090d16;
+      background: #faf6f2;
     }
     .controls {
       display: flex;
@@ -36,11 +36,11 @@
       font-weight: 700;
       cursor: pointer;
       font-size: 14px;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      transition: transform 0.15s ease;
     }
     button:active { transform: scale(0.97); }
-    #btnPlay { background: #1e293b; color: #f8fafc; border: 1px solid #334155; }
-    #btnRecord { background: #10b981; color: #052e16; }
+    #btnPlay { background: #1e293b; color: #f8fafc; }
+    #btnRecord { background: #7c1d18; color: #ffffff; }
     #status { font-size: 13px; color: #94a3b8; }
   </style>
 </head>
@@ -52,19 +52,29 @@
     <button id="btnPlay">▶ Vista Previa (25s)</button>
     <button id="btnRecord">⏺ Grabar y Descargar (.webm)</button>
   </div>
-  <div id="status">Listo para previsualizar o exportar en 1080x1920 (60 FPS).</div>
+  <div id="status">Sube logo-abbamend.png junto a index.html para usar tu logo real.</div>
 
   <script>
     const canvas = document.getElementById('stage');
     const ctx = canvas.getContext('2d');
     const statusEl = document.getElementById('status');
 
-    const DURATION = 25000; // 25 segundos
+    const DURATION = 25000;
     let startTime = null;
     let animId = null;
 
-    // Utilidades de dibujo
-    function roundRect(x, y, w, h, r, fill, stroke = null, lineWidth = 4) {
+    // Cargar logo real de AbbaMend desde el mismo repositorio (o URL de Supabase Storage)
+    const abbaLogo = new Image();
+    abbaLogo.crossOrigin = 'anonymous';
+    abbaLogo.src = './logo-abbamend.png';
+    let logoLoaded = false;
+    abbaLogo.onload = () => {
+      logoLoaded = true;
+      statusEl.textContent = 'Logo de AbbaMend cargado correctamente. Listo para grabar.';
+      renderFrame(performance.now() - (startTime || performance.now()));
+    };
+
+    function roundRect(x, y, w, h, r, fill, stroke = null, lineWidth = 3) {
       ctx.beginPath();
       ctx.roundRect(x, y, w, h, r);
       if (fill) { ctx.fillStyle = fill; ctx.fill(); }
@@ -95,320 +105,300 @@
       });
     }
 
-    // Logo Vectorial AbbaMend (Emblema + Texto opcional)
-    function drawAbbaMendLogo(cx, cy, scale = 1, showText = true) {
+    function drawAbbaMendBrand(cx, cy, size = 120, withSubtitle = false) {
       ctx.save();
-      ctx.translate(cx, cy);
-      ctx.scale(scale, scale);
-
-      // Resplandor sutil
-      const glow = ctx.createRadialGradient(0, 0, 10, 0, 0, 110);
-      glow.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
-      glow.addColorStop(1, 'rgba(16, 185, 129, 0)');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(0, 0, 110, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Hexágono tecnológico
-      const r = 68;
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = (Math.PI / 3) * i - Math.PI / 2;
-        const px = r * Math.cos(angle);
-        const py = r * Math.sin(angle);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      const hexGrad = ctx.createLinearGradient(-50, -50, 50, 50);
-      hexGrad.addColorStop(0, '#10b981');
-      hexGrad.addColorStop(1, '#0ea5e9');
-      ctx.fillStyle = hexGrad;
-      ctx.fill();
-
-      // Monograma "A" estilizado + nodo IA
-      ctx.strokeStyle = '#060911';
-      ctx.lineWidth = 10;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.beginPath();
-      ctx.moveTo(-24, 26);
-      ctx.lineTo(0, -28);
-      ctx.lineTo(24, 26);
-      ctx.moveTo(-14, 8);
-      ctx.lineTo(14, 8);
-      ctx.stroke();
-
-      // Punto de chispa IA
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(0, -42, 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      if (showText) {
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '900 58px system-ui';
-        ctx.fillText('AbbaMend', 0, 130);
-
-        ctx.fillStyle = '#34d399';
-        ctx.font = '700 28px system-ui';
-        ctx.fillText('FULL-STACK AI BUILDER', 0, 168);
+      if (logoLoaded) {
+        ctx.drawImage(abbaLogo, cx - size / 2, cy - size / 2, size, size);
+      } else {
+        // Respaldo limpio si aún no se sube logo-abbamend.png
+        roundRect(cx - size / 2, cy - size / 2, size, size, size * 0.24, '#111827', '#10b981', 3);
+        drawCenteredText('AM', cx, cy + size * 0.14, size * 0.8, size * 0.4, `900 ${Math.round(size * 0.4)}px system-ui`, '#10b981');
       }
 
+      if (withSubtitle) {
+        drawCenteredText('AbbaMend', cx, cy + size / 2 + 64, 800, 70, '900 62px system-ui', '#111827');
+        drawCenteredText('FULL-STACK AI BUILDER', cx, cy + size / 2 + 114, 800, 40, '700 28px system-ui', '#7c1d18');
+      }
       ctx.restore();
     }
 
-    // Marca de agua / Header discreto superior
-    function drawTopBadge() {
-      roundRect(350, 48, 380, 56, 28, 'rgba(15, 23, 42, 0.85)', '#1e293b', 2);
-      drawAbbaMendLogo(392, 76, 0.26, false);
+    function drawTopBar(sec) {
+      // Barra de progreso superior
+      ctx.fillStyle = '#e5ddd5';
+      ctx.fillRect(0, 0, 1080, 10);
+      ctx.fillStyle = '#7c1d18';
+      ctx.fillRect(0, 0, (Math.min(sec * 1000, DURATION) / DURATION) * 1080, 10);
+
+      // Header estilo web-app
+      roundRect(48, 32, 984, 110, 55, '#ffffff', '#ebe3da', 2);
+      drawAbbaMendBrand(106, 87, 68, false);
+
       ctx.textAlign = 'left';
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = '700 22px system-ui';
-      ctx.fillText('AbbaMend Solutions', 424, 84);
+      ctx.fillStyle = '#141414';
+      ctx.font = '800 32px system-ui';
+      ctx.fillText('AbbaMend', 154, 84);
+      ctx.fillStyle = '#6b625b';
+      ctx.font = '500 21px system-ui';
+      ctx.fillText('Catálogos, Fidelización & Software a Medida', 154, 114);
+
+      roundRect(750, 54, 250, 66, 33, '#7c1d18');
+      drawCenteredText('Demo en Vivo', 875, 95, 220, 30, '700 24px system-ui', '#ffffff');
     }
 
     function renderFrame(elapsed) {
       const t = Math.min(elapsed, DURATION);
       const sec = t / 1000;
 
-      // Fondo degradado oscuro
-      const bg = ctx.createLinearGradient(0, 0, 1080, 1920);
-      bg.addColorStop(0, '#060911');
-      bg.addColorStop(0.5, '#0b1120');
-      bg.addColorStop(1, '#090d16');
+      // Fondo crema editorial claro inspirado en la referencia
+      const bg = ctx.createLinearGradient(0, 0, 0, 1920);
+      bg.addColorStop(0, '#fcf9f6');
+      bg.addColorStop(1, '#f5efe8');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, 1080, 1920);
 
-      // Barra superior de progreso
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(0, 0, 1080, 12);
-      ctx.fillStyle = '#10b981';
-      ctx.fillRect(0, 0, (t / DURATION) * 1080, 12);
+      drawTopBar(sec);
 
-      // ==========================================
-      // ESCENA 1: 0s - 3s (Gancho visual)
-      // ==========================================
-      if (sec < 3) {
-        drawTopBadge();
-        const shake = Math.sin(sec * 24) * 6;
+      // ==================================================
+      // ESCENA 1 (0s - 4s): Gancho + Hero de Marca Ficticia (KINETIX)
+      // ==================================================
+      if (sec < 4) {
+        roundRect(64, 190, 952, 1120, 48, '#f8f1ea', '#e8dfd5', 2);
 
-        roundRect(140 + shake, 520, 800, 150, 28, '#ef44441a', '#ef4444', 3);
-        drawCenteredText('💬 "¿Me pasas el menú y precios?"', 540 + shake, 608, 740, 45, '700 36px system-ui', '#fca5a5');
+        roundRect(110, 240, 640, 58, 29, '#ffffff', '#e4dad0', 2);
+        drawCenteredText('KINETIX • SNEAKERS, STREETWEAR & DROPS', 430, 277, 600, 30, '700 22px system-ui', '#7c1d18');
 
-        roundRect(140 - shake, 710, 800, 150, 28, '#f59e0b1a', '#f59e0b', 3);
-        drawCenteredText('⏳ +35 chats esperando respuesta...', 540 - shake, 798, 740, 45, '700 36px system-ui', '#fcd34d');
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 82px system-ui';
+        ctx.fillText('Cada paso marca', 110, 405);
+        ctx.fillText('tu propio estilo.', 110, 495);
 
-        drawCenteredText('¿Sigues respondiendo lo mismo 50 veces al día?', 540, 1060, 900, 80, '800 66px system-ui', '#ffffff');
-        drawCenteredText('Automatiza tus ventas desde el primer clic', 540, 1260, 860, 50, '500 38px system-ui', '#94a3b8');
+        ctx.fillStyle = '#57534e';
+        ctx.font = '500 34px system-ui';
+        ctx.fillText('Catálogo interactivo, club de puntos', 110, 585);
+        ctx.fillText('y pedido directo por WhatsApp sin', 110, 630);
+        ctx.fillText('depender de respuestas manuales.', 110, 675);
+
+        // Tarjeta destacada de marca ficticia KINETIX
+        roundRect(110, 740, 860, 380, 36, '#7c1d18');
+        drawCenteredText('KINETIX', 540, 915, 760, 90, '900 92px system-ui', '#ffffff');
+        drawCenteredText('URBAN FOOTWEAR & DROPS • MARCA DEMO', 540, 985, 760, 36, '700 26px system-ui', '#fecaca');
+        drawCenteredText('Catálogo listo • Clientes frecuentes • Reserva WhatsApp', 540, 1045, 760, 36, '500 26px system-ui', '#fde8e8');
+
+        // Botones de acción visual
+        roundRect(110, 1165, 360, 84, 24, '#7c1d18');
+        drawCenteredText('Ver catálogo  >', 290, 1216, 320, 36, '700 28px system-ui', '#ffffff');
+
+        roundRect(495, 1165, 475, 84, 24, '#ffffff', '#dfd5ca', 2);
+        drawCenteredText('Tienda & Drops • Atención rápida', 732, 1216, 440, 36, '600 25px system-ui', '#292524');
+
+        drawCenteredText('¿Tu negocio vende mejor con una web así?', 540, 1465, 920, 72, '800 56px system-ui', '#111111');
+        drawCenteredText('Menú o catálogo digital + fidelización en un solo flujo', 540, 1615, 900, 46, '500 34px system-ui', '#57534e');
       }
 
-      // ==========================================
-      // ESCENA 2: 3s - 9.5s (Muestra Menú Digital - Brasa & Café)
-      // ==========================================
-      else if (sec < 9.5) {
-        drawTopBadge();
-        const localT = sec - 3;
-
-        // Mockup de teléfono
-        roundRect(130, 160, 820, 1180, 54, '#0f172a', '#334155', 6);
-
-        // Cabecera de marca ficticia: Brasa & Café
-        roundRect(160, 195, 760, 165, 36, '#1e293b');
+      // ==================================================
+      // ESCENA 2 (4s - 10.5s): Catálogo / Menú Digital + Pedido WhatsApp
+      // ==================================================
+      else if (sec < 10.5) {
+        const localT = sec - 4;
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#fb923c';
-        ctx.font = '800 24px system-ui';
-        ctx.fillText('DEMO EN VIVO • MENÚ DIGITAL', 200, 245);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '900 44px system-ui';
-        ctx.fillText('🔥 Brasa & Café', 200, 302);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '500 24px system-ui';
-        ctx.fillText('Urban Grill & Coffee • Pedido directo sin comisiones', 200, 338);
+        ctx.fillStyle = '#7c1d18';
+        ctx.font = '800 26px system-ui';
+        ctx.fillText('CATÁLOGO / MENÚ INTERACTIVO • KINETIX', 64, 215);
 
-        // Ítems del menú con selección animada
-        const menuItems = [
-          { name: 'Burger Artesanal Doble', desc: 'Pan brioche, queso cheddar y papas', price: '$6.50', selectedAt: 0.8 },
-          { name: 'Café Cold Brew Vainilla', desc: 'Extracción fría 18h • 12 oz', price: '$2.75', selectedAt: 2.0 },
-          { name: 'Brownie Tibio con Helado', desc: 'Cacao 70% manabita', price: '$3.50', selectedAt: 3.2 }
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 56px system-ui';
+        ctx.fillText('Eligen, suman y piden', 64, 282);
+        ctx.fillText('directo a tu WhatsApp.', 64, 344);
+
+        const products = [
+          { tag: 'DROP 01', name: 'Runner Retro 98 Cream', sub: 'Tallas 38–43 • Envío inmediato', price: '$68.00', at: 0.7 },
+          { tag: 'EDICIÓN', name: 'Court Low Obsidian', sub: 'Cuero sintético • Alta rotación', price: '$59.00', at: 2.0 },
+          { tag: 'ACCESORIO', name: 'Pack 3 Medias Pro Crew', sub: 'Algodón peinado • Combina bien', price: '$14.00', at: 3.3 }
         ];
 
         let total = 0;
-        let count = 0;
+        let itemsCount = 0;
 
-        menuItems.forEach((item, idx) => {
-          const y = 400 + idx * 205;
-          const isSelected = localT >= item.selectedAt;
-          if (isSelected) {
-            total += parseFloat(item.price.replace('$', ''));
-            count++;
+        products.forEach((p, idx) => {
+          const y = 395 + idx * 315;
+          const active = localT >= p.at;
+          if (active) {
+            total += parseFloat(p.price.replace('$', ''));
+            itemsCount++;
           }
 
-          roundRect(165, y, 750, 175, 28, isSelected ? '#10b98118' : '#1e293b', isSelected ? '#10b981' : '#334155', 3);
+          roundRect(64, y, 952, 280, 36, active ? '#fff8f6' : '#ffffff', active ? '#7c1d18' : '#e6ddd3', active ? 3.5 : 2);
 
           ctx.textAlign = 'left';
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '800 32px system-ui';
-          ctx.fillText(item.name, 200, y + 58);
+          ctx.fillStyle = '#7c1d18';
+          ctx.font = '800 22px system-ui';
+          ctx.fillText(p.tag, 104, y + 56);
 
-          ctx.fillStyle = '#94a3b8';
-          ctx.font = '400 24px system-ui';
-          ctx.fillText(item.desc, 200, y + 98);
+          ctx.fillStyle = '#111111';
+          ctx.font = '800 38px system-ui';
+          ctx.fillText(p.name, 104, y + 108);
 
-          ctx.fillStyle = '#34d399';
-          ctx.font = '800 32px system-ui';
-          ctx.fillText(item.price, 200, y + 144);
+          ctx.fillStyle = '#6b625b';
+          ctx.font = '500 26px system-ui';
+          ctx.fillText(p.sub, 104, y + 154);
 
-          // Botón + / ✓
-          roundRect(755, y + 52, 125, 70, 20, isSelected ? '#10b981' : '#334155');
-          drawCenteredText(isSelected ? '✓ 1' : '+ Pedir', 817, y + 97, 110, 30, '800 26px system-ui', isSelected ? '#052e16' : '#ffffff');
+          ctx.fillStyle = '#111111';
+          ctx.font = '900 36px system-ui';
+          ctx.fillText(p.price, 104, y + 232);
+
+          roundRect(740, y + 178, 235, 68, 20, active ? '#7c1d18' : '#f3ece4', active ? '#7c1d18' : '#d6cbc0', 2);
+          drawCenteredText(active ? '✓ Agregado' : '+ Seleccionar', 857, y + 221, 210, 30, '700 25px system-ui', active ? '#ffffff' : '#292524');
         });
 
-        // Barra de carrito inferior en el celular
-        const readyToSend = localT >= 4.2;
-        roundRect(165, 1050, 750, 125, 30, readyToSend ? '#10b981' : '#1e293b');
+        // Barra inferior de reserva rápida por WhatsApp
+        const ready = localT >= 4.3;
+        roundRect(64, 1365, 952, 165, 38, ready ? '#15803d' : '#ffffff', ready ? '#15803d' : '#dfd5ca', 3);
+
         ctx.textAlign = 'left';
-        ctx.fillStyle = readyToSend ? '#052e16' : '#ffffff';
-        ctx.font = '800 30px system-ui';
-        ctx.fillText(`🛒 ${count} productos • Total: $${total.toFixed(2)}`, 200, 1122);
+        ctx.fillStyle = ready ? '#ffffff' : '#111111';
+        ctx.font = '800 32px system-ui';
+        ctx.fillText(`Reserva rápida por WhatsApp (${itemsCount} ítems)`, 104, 1432);
 
-        ctx.textAlign = 'right';
-        ctx.font = '900 28px system-ui';
-        ctx.fillText(readyToSend ? '📲 Enviar a WhatsApp →' : 'Elige tus platos', 880, 1122);
+        ctx.fillStyle = ready ? '#dcfce7' : '#6b625b';
+        ctx.font = '600 26px system-ui';
+        ctx.fillText(`Se arma en vivo con lo elegido • Total: $${total.toFixed(2)}`, 104, 1482);
 
-        // Titular inferior de beneficio
-        drawCenteredText('Menú Digital + Pedido directo a WhatsApp', 540, 1470, 920, 72, '800 56px system-ui', '#ffffff');
-        drawCenteredText('Rápido, visual y sin pagar comisiones por venta', 540, 1630, 880, 48, '500 36px system-ui', '#34d399');
+        drawCenteredText('Sin comisiones de terceros • Ideal para menús o catálogos', 540, 1640, 920, 44, '700 32px system-ui', '#292524');
       }
 
-      // ==========================================
-      // ESCENA 3: 9.5s - 15.5s (Muestra Sistema de Fidelización - Brasa & Café)
-      // ==========================================
-      else if (sec < 15.5) {
-        drawTopBadge();
-        const localT = sec - 9.5;
+      // ==================================================
+      // ESCENA 3 (10.5s - 16.5s): Club de Clientes Frecuentes
+      // ==================================================
+      else if (sec < 16.5) {
+        const localT = sec - 10.5;
 
-        // Tarjeta Digital Wallet / Fidelización
-        roundRect(130, 220, 820, 980, 50, '#111827', '#f59e0b', 5);
+        // Tarjeta oscura superior estilo la captura ("Club de Clientes Frecuentes")
+        roundRect(64, 210, 952, 540, 44, '#5e1410');
 
-        // Encabezado de tarjeta
-        roundRect(165, 260, 750, 180, 34, '#f59e0b1a');
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#fbbf24';
+        ctx.fillStyle = '#fca5a5';
         ctx.font = '800 24px system-ui';
-        ctx.fillText('TARJETA DIGITAL DE CLIENTE FRECUENTE', 205, 315);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '900 44px system-ui';
-        ctx.fillText('🔥 Brasa & Café Rewards', 205, 372);
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '500 24px system-ui';
-        ctx.fillText('Cliente: Camila Mendoza  •  Nivel Oro', 205, 412);
+        ctx.fillText('BENEFICIOS PARA TI', 110, 282);
 
-        // 5 Sellos interactivos
-        const filled = Math.min(5, Math.floor(localT * 1.15) + 1);
+        roundRect(690, 240, 276, 62, 31, '#7c1d18', '#a83832', 2);
+        const visits = Math.min(5, Math.floor(localT * 1.2) + 1);
+        drawCenteredText(visits === 5 ? 'NIVEL VIP • PREMIO' : `CLIENTE • ${visits} VISITAS`, 828, 280, 250, 30, '800 22px system-ui', '#ffffff');
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 50px system-ui';
+        ctx.fillText('Club de Clientes Frecuentes', 110, 365);
+        ctx.fillStyle = '#fed7aa';
+        ctx.font = '700 36px system-ui';
+        ctx.fillText('• KINETIX', 110, 418);
+
+        // 5 Sellos de fidelización
         for (let i = 0; i < 5; i++) {
-          const cx = 245 + i * 147;
+          const cx = 175 + i * 182;
           const cy = 585;
-          const active = i < filled;
+          const earned = i < visits;
 
           ctx.beginPath();
-          ctx.arc(cx, cy, 56, 0, Math.PI * 2);
-          ctx.fillStyle = active ? '#f59e0b' : '#1e293b';
+          ctx.arc(cx, cy, 62, 0, Math.PI * 2);
+          ctx.fillStyle = earned ? '#ffffff' : '#430d0a';
           ctx.fill();
-          if (active) {
-            ctx.strokeStyle = '#fef3c7';
-            ctx.lineWidth = 4;
-            ctx.stroke();
-          }
-          drawCenteredText(active ? '★' : `${i + 1}`, cx, cy + 16, 80, 40, '900 44px system-ui', active ? '#090d16' : '#64748b');
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = earned ? '#ffffff' : '#99342e';
+          ctx.stroke();
+
+          drawCenteredText(earned ? '★' : `#${i + 1}`, cx, cy + 16, 90, 40, '900 40px system-ui', earned ? '#5e1410' : '#fca5a5');
         }
 
-        // Progreso y recompensa
-        roundRect(185, 710, 710, 165, 28, filled === 5 ? '#10b98122' : '#1e293b', filled === 5 ? '#10b981' : '#334155', 3);
-        drawCenteredText(
-          filled === 5 ? '🎉 ¡5/5 SELLOS COMPLETOS!' : `Progreso actual: ${filled} de 5 visitas`,
-          540, 775, 660, 42, '800 34px system-ui', filled === 5 ? '#34d399' : '#fbbf24'
-        );
-        drawCenteredText(
-          filled === 5 ? 'Premio activo: 1 Café o Postre GRATIS en caja' : 'Completa 5 visitas y desbloquea tu premio',
-          540, 830, 660, 38, '500 28px system-ui', '#e2e8f0'
-        );
+        // Tarjeta clara inferior con el beneficio activo
+        roundRect(64, 795, 952, 470, 44, '#ffffff', '#e6ddd3', 2);
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#7c1d18';
+        ctx.font = '800 26px system-ui';
+        ctx.fillText('FIDELIZACIÓN DIGITAL ACTIVA', 110, 868);
 
-        // Código QR simulado + validación instantánea
-        roundRect(435, 925, 210, 210, 24, '#ffffff');
-        ctx.fillStyle = '#090d16';
-        for (let r = 0; r < 5; r++) {
-          for (let c = 0; c < 5; c++) {
-            if ((r + c) % 2 === 0 || (r === 2 && c === 2)) {
-              ctx.fillRect(465 + c * 32, 955 + r * 32, 22, 22);
-            }
-          }
-        }
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 48px system-ui';
+        ctx.fillText(visits === 5 ? '¡Beneficio VIP desbloqueado!' : 'Suma visitas y desbloquea', 110, 935);
+        ctx.fillText(visits === 5 ? '15% OFF en tu próximo pedido' : 'beneficios exclusivos.', 110, 995);
 
-        // Titular inferior
-        drawCenteredText('Sistema de Fidelización Digital', 540, 1360, 920, 72, '800 58px system-ui', '#ffffff');
-        drawCenteredText('Sin tarjetas de cartón • Tus clientes vuelven solos', 540, 1465, 900, 48, '500 36px system-ui', '#fbbf24');
+        ctx.fillStyle = '#57534e';
+        ctx.font = '500 30px system-ui';
+        ctx.fillText('Historial de compras, puntos o sellos sin papel', 110, 1075);
+        ctx.fillText('y listo para activar recurrencia en tu negocio.', 110, 1118);
+
+        roundRect(110, 1165, 420, 64, 20, '#f8f1ea');
+        drawCenteredText('✓ Sin tarjetas físicas', 320, 1205, 380, 30, '700 24px system-ui', '#111111');
+
+        roundRect(555, 1165, 410, 64, 20, '#f8f1ea');
+        drawCenteredText('✓ Clientes que vuelven', 760, 1205, 380, 30, '700 24px system-ui', '#111111');
+
+        drawCenteredText('Convierte compras sueltas en clientes recurrentes', 540, 1435, 920, 72, '800 56px system-ui', '#111111');
       }
 
-      // ==========================================
-      // ESCENA 4: 15.5s - 21s (Ecosistema Completo AbbaMend)
-      // ==========================================
+      // ==================================================
+      // ESCENA 4 (16.5s - 21s): Todo lo que hace AbbaMend
+      // ==================================================
       else if (sec < 21) {
-        drawTopBadge();
-        drawCenteredText('ECOSISTEMA COMPLETO', 540, 260, 900, 45, '800 34px system-ui', '#38bdf8');
-        drawCenteredText('Todo lo que tu negocio necesita para escalar', 540, 360, 920, 72, '800 58px system-ui', '#ffffff');
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#7c1d18';
+        ctx.font = '800 26px system-ui';
+        ctx.fillText('MÁS ALLÁ DEL CATÁLOGO Y LA FIDELIZACIÓN', 64, 215);
 
-        const pillars = [
-          { icon: '🤖', title: 'Automatización & Bots IA', desc: 'Respuestas 24/7 en WhatsApp, reservas y seguimiento automático' },
-          { icon: '🌐', title: 'Web Apps & Micro-SaaS', desc: 'Catálogos, paneles administrativos y plataformas en la nube' },
-          { icon: '⚙️', title: 'Software a Medida', desc: 'Sistemas conectados a bases de datos diseñados para tu operación' }
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 56px system-ui';
+        ctx.fillText('Automatización y software', 64, 282);
+        ctx.fillText('a medida para crecer.', 64, 344);
+
+        const capabilities = [
+          { title: 'Automatización & Flujos Inteligentes', desc: 'Atención automatizada, captura de clientes y procesos conectados.' },
+          { title: 'Web Apps & Micro-SaaS', desc: 'Tiendas, menús digitales, paneles de control y portales a medida.' },
+          { title: 'Sistemas & Datos a Medida', desc: 'Soluciones construidas según la operación real de tu empresa.' }
         ];
 
-        pillars.forEach((item, idx) => {
-          const y = 570 + idx * 310;
-          roundRect(120, y, 840, 250, 34, '#0f172a', '#38bdf866', 3);
+        capabilities.forEach((cap, idx) => {
+          const y = 415 + idx * 335;
+          roundRect(64, y, 952, 290, 36, '#ffffff', '#e4dad0', 2);
 
-          roundRect(160, y + 60, 130, 130, 28, '#38bdf81a');
-          drawCenteredText(item.icon, 225, y + 145, 110, 60, '700 62px system-ui', '#ffffff');
+          roundRect(104, y + 48, 86, 86, 24, '#7c1d18');
+          drawCenteredText(`0${idx + 1}`, 147, y + 104, 80, 40, '900 34px system-ui', '#ffffff');
 
           ctx.textAlign = 'left';
-          ctx.fillStyle = '#38bdf8';
+          ctx.fillStyle = '#111111';
           ctx.font = '800 38px system-ui';
-          ctx.fillText(item.title, 325, y + 102);
+          ctx.fillText(cap.title, 220, y + 98);
 
-          ctx.fillStyle = '#cbd5e1';
-          ctx.font = '500 28px system-ui';
-          const words = item.desc.split(' ');
-          let line1 = words.slice(0, 5).join(' ');
-          let line2 = words.slice(5).join(' ');
-          ctx.fillText(line1, 325, y + 152);
-          ctx.fillText(line2, 325, y + 190);
+          ctx.fillStyle = '#57534e';
+          ctx.font = '500 30px system-ui';
+          const mid = Math.ceil(cap.desc.split(' ').length / 2);
+          const words = cap.desc.split(' ');
+          ctx.fillText(words.slice(0, mid).join(' '), 220, y + 162);
+          ctx.fillText(words.slice(mid).join(' '), 220, y + 204);
         });
+
+        drawCenteredText('De una solución rápida a un sistema completo', 540, 1520, 920, 56, '800 44px system-ui', '#7c1d18');
       }
 
-      // ==========================================
-      // ESCENA 5: 21s - 25s (Cierre Oficial con Logo AbbaMend)
-      // ==========================================
+      // ==================================================
+      // ESCENA 5 (21s - 25s): Cierre con Logo Real de AbbaMend
+      // ==================================================
       else {
-        roundRect(110, 430, 860, 740, 54, '#0f172a', '#10b981', 5);
+        roundRect(64, 250, 952, 1340, 52, '#ffffff', '#e6ddd3', 2);
 
-        // Logo central grande de AbbaMend
-        drawAbbaMendLogo(540, 640, 1.45, true);
+        drawAbbaMendBrand(540, 540, 210, true);
 
-        drawCenteredText('Menús Digitales • Fidelización • Automatización • Software', 540, 990, 780, 44, '600 30px system-ui', '#cbd5e1');
+        drawCenteredText('Menús y catálogos digitales • Fidelización • Automatización • Software a medida', 540, 885, 820, 46, '600 32px system-ui', '#44403c');
 
-        // Botón CTA pulsante
+        roundRect(130, 1025, 820, 190, 32, '#f8f1ea');
+        drawCenteredText('¿Quieres una demo para tu negocio?', 540, 1098, 760, 44, '800 36px system-ui', '#111111');
+        drawCenteredText('Escríbenos y adaptamos la solución a tu operación', 540, 1158, 760, 40, '500 30px system-ui', '#57534e');
+
         const pulse = 1 + Math.sin(sec * 10) * 0.025;
         ctx.save();
-        ctx.translate(540, 1320);
+        ctx.translate(540, 1350);
         ctx.scale(pulse, pulse);
-        roundRect(-360, -68, 720, 136, 68, '#10b981');
-        drawCenteredText('📲 Solicita tu Demo por WhatsApp', 0, 14, 680, 40, '900 38px system-ui', '#052e16');
+        roundRect(-370, -68, 740, 136, 68, '#7c1d18');
+        drawCenteredText('Solicitar Demo por WhatsApp  →', 0, 14, 700, 40, '800 36px system-ui', '#ffffff');
         ctx.restore();
-
-        drawCenteredText('Digitaliza y automatiza tu negocio hoy', 540, 1510, 860, 45, '500 34px system-ui', '#94a3b8');
       }
     }
 
@@ -444,7 +434,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-brasa-cafe-25s.webm';
+        a.download = 'abbamend-demo-kinetix-25s.webm';
         a.click();
         statusEl.textContent = '¡Video descargado! Listo para subir a Supabase Storage o redes.';
       };
@@ -454,8 +444,7 @@
       playAnimation(() => recorder.stop());
     };
 
-    // Dibujar vista inicial en el segundo 4 para previsualizar el mockup al abrir
-    renderFrame(4600);
+    renderFrame(1500);
   </script>
 </body>
 </html>
