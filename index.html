@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo Video Generator</title>
+  <title>AbbaMend Promo Video Generator v2</title>
   <style>
     body {
       margin: 0;
-      background: #090d16;
+      background: #060911;
       color: #f8fafc;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       display: flex;
@@ -18,28 +18,28 @@
       gap: 16px;
     }
     canvas {
-      height: 72vh;
+      height: 74vh;
       aspect-ratio: 9 / 16;
-      border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
       border: 1px solid #1e293b;
-      background: #0f172a;
+      background: #090d16;
     }
     .controls {
       display: flex;
       gap: 12px;
     }
     button {
-      padding: 12px 20px;
-      border-radius: 10px;
+      padding: 12px 22px;
+      border-radius: 12px;
       border: none;
       font-weight: 700;
       cursor: pointer;
       font-size: 14px;
-      transition: transform 0.15s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
     button:active { transform: scale(0.97); }
-    #btnPlay { background: #334155; color: #fff; }
+    #btnPlay { background: #1e293b; color: #f8fafc; border: 1px solid #334155; }
     #btnRecord { background: #10b981; color: #052e16; }
     #status { font-size: 13px; color: #94a3b8; }
   </style>
@@ -63,7 +63,14 @@
     let startTime = null;
     let animId = null;
 
-    // Utilidad para texto multilínea centrado
+    // Utilidades de dibujo
+    function roundRect(x, y, w, h, r, fill, stroke = null, lineWidth = 4) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lineWidth; ctx.stroke(); }
+    }
+
     function drawCenteredText(text, x, y, maxWidth, lineHeight, font, color) {
       ctx.font = font;
       ctx.fillStyle = color;
@@ -88,117 +95,320 @@
       });
     }
 
-    // Tarjeta redondeada
-    function roundRect(x, y, w, h, r, fill, stroke = null) {
+    // Logo Vectorial AbbaMend (Emblema + Texto opcional)
+    function drawAbbaMendLogo(cx, cy, scale = 1, showText = true) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(scale, scale);
+
+      // Resplandor sutil
+      const glow = ctx.createRadialGradient(0, 0, 10, 0, 0, 110);
+      glow.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+      glow.addColorStop(1, 'rgba(16, 185, 129, 0)');
+      ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.roundRect(x, y, w, h, r);
-      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 4; ctx.stroke(); }
+      ctx.arc(0, 0, 110, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Hexágono tecnológico
+      const r = 68;
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 3) * i - Math.PI / 2;
+        const px = r * Math.cos(angle);
+        const py = r * Math.sin(angle);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      const hexGrad = ctx.createLinearGradient(-50, -50, 50, 50);
+      hexGrad.addColorStop(0, '#10b981');
+      hexGrad.addColorStop(1, '#0ea5e9');
+      ctx.fillStyle = hexGrad;
+      ctx.fill();
+
+      // Monograma "A" estilizado + nodo IA
+      ctx.strokeStyle = '#060911';
+      ctx.lineWidth = 10;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-24, 26);
+      ctx.lineTo(0, -28);
+      ctx.lineTo(24, 26);
+      ctx.moveTo(-14, 8);
+      ctx.lineTo(14, 8);
+      ctx.stroke();
+
+      // Punto de chispa IA
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, -42, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (showText) {
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 58px system-ui';
+        ctx.fillText('AbbaMend', 0, 130);
+
+        ctx.fillStyle = '#34d399';
+        ctx.font = '700 28px system-ui';
+        ctx.fillText('FULL-STACK AI BUILDER', 0, 168);
+      }
+
+      ctx.restore();
+    }
+
+    // Marca de agua / Header discreto superior
+    function drawTopBadge() {
+      roundRect(350, 48, 380, 56, 28, 'rgba(15, 23, 42, 0.85)', '#1e293b', 2);
+      drawAbbaMendLogo(392, 76, 0.26, false);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '700 22px system-ui';
+      ctx.fillText('AbbaMend Solutions', 424, 84);
     }
 
     function renderFrame(elapsed) {
       const t = Math.min(elapsed, DURATION);
       const sec = t / 1000;
 
-      // Fondo base degradado
+      // Fondo degradado oscuro
       const bg = ctx.createLinearGradient(0, 0, 1080, 1920);
-      bg.addColorStop(0, '#090d16');
-      bg.addColorStop(1, '#111827');
+      bg.addColorStop(0, '#060911');
+      bg.addColorStop(0.5, '#0b1120');
+      bg.addColorStop(1, '#090d16');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, 1080, 1920);
 
       // Barra superior de progreso
       ctx.fillStyle = '#1e293b';
-      ctx.fillRect(0, 0, 1080, 14);
+      ctx.fillRect(0, 0, 1080, 12);
       ctx.fillStyle = '#10b981';
-      ctx.fillRect(0, 0, (t / DURATION) * 1080, 14);
+      ctx.fillRect(0, 0, (t / DURATION) * 1080, 12);
 
-      // ESCENA 1: 0s - 3s (Gancho)
+      // ==========================================
+      // ESCENA 1: 0s - 3s (Gancho visual)
+      // ==========================================
       if (sec < 3) {
-        const pulse = 1 + Math.sin(sec * 12) * 0.03;
-        ctx.save();
-        ctx.translate(540, 680);
-        ctx.scale(pulse, pulse);
-        roundRect(-360, -90, 720, 180, 30, '#ef444422', '#ef4444');
-        drawCenteredText('💬 +48 chats sin responder...', 0, 15, 660, 50, '700 42px system-ui', '#fca5a5');
-        ctx.restore();
+        drawTopBadge();
+        const shake = Math.sin(sec * 24) * 6;
 
-        drawCenteredText('¿Sigues perdiendo ventas respondiendo lo mismo cada día?', 540, 1020, 900, 78, '800 64px system-ui', '#ffffff');
+        roundRect(140 + shake, 520, 800, 150, 28, '#ef44441a', '#ef4444', 3);
+        drawCenteredText('💬 "¿Me pasas el menú y precios?"', 540 + shake, 608, 740, 45, '700 36px system-ui', '#fca5a5');
+
+        roundRect(140 - shake, 710, 800, 150, 28, '#f59e0b1a', '#f59e0b', 3);
+        drawCenteredText('⏳ +35 chats esperando respuesta...', 540 - shake, 798, 740, 45, '700 36px system-ui', '#fcd34d');
+
+        drawCenteredText('¿Sigues respondiendo lo mismo 50 veces al día?', 540, 1060, 900, 80, '800 66px system-ui', '#ffffff');
+        drawCenteredText('Automatiza tus ventas desde el primer clic', 540, 1260, 860, 50, '500 38px system-ui', '#94a3b8');
       }
 
-      // ESCENA 2: 3s - 9s (Menú Digital)
-      else if (sec < 9) {
-        const p = Math.min((sec - 3) / 0.6, 1);
-        roundRect(140, 340, 800, 780, 44, '#1e293b', '#10b981');
-        drawCenteredText('🍔 MENÚ DIGITAL INTERACTIVO', 540, 440, 720, 50, '800 38px system-ui', '#10b981');
+      // ==========================================
+      // ESCENA 2: 3s - 9.5s (Muestra Menú Digital - Brasa & Café)
+      // ==========================================
+      else if (sec < 9.5) {
+        drawTopBadge();
+        const localT = sec - 3;
 
-        // Ítems simulados
-        const items = ['Combo Especial  •  $6.50', 'Bebida Artesanal  •  $2.50', 'Postre de la Casa  •  $3.00'];
-        items.forEach((item, i) => {
-          const offset = (1 - p) * 80 * (i + 1);
-          roundRect(200, 510 + i * 140 + offset, 680, 110, 22, '#0f172a');
-          drawCenteredText(item, 540, 578 + i * 140 + offset, 620, 40, '600 36px system-ui', '#e2e8f0');
+        // Mockup de teléfono
+        roundRect(130, 160, 820, 1180, 54, '#0f172a', '#334155', 6);
+
+        // Cabecera de marca ficticia: Brasa & Café
+        roundRect(160, 195, 760, 165, 36, '#1e293b');
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#fb923c';
+        ctx.font = '800 24px system-ui';
+        ctx.fillText('DEMO EN VIVO • MENÚ DIGITAL', 200, 245);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 44px system-ui';
+        ctx.fillText('🔥 Brasa & Café', 200, 302);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '500 24px system-ui';
+        ctx.fillText('Urban Grill & Coffee • Pedido directo sin comisiones', 200, 338);
+
+        // Ítems del menú con selección animada
+        const menuItems = [
+          { name: 'Burger Artesanal Doble', desc: 'Pan brioche, queso cheddar y papas', price: '$6.50', selectedAt: 0.8 },
+          { name: 'Café Cold Brew Vainilla', desc: 'Extracción fría 18h • 12 oz', price: '$2.75', selectedAt: 2.0 },
+          { name: 'Brownie Tibio con Helado', desc: 'Cacao 70% manabita', price: '$3.50', selectedAt: 3.2 }
+        ];
+
+        let total = 0;
+        let count = 0;
+
+        menuItems.forEach((item, idx) => {
+          const y = 400 + idx * 205;
+          const isSelected = localT >= item.selectedAt;
+          if (isSelected) {
+            total += parseFloat(item.price.replace('$', ''));
+            count++;
+          }
+
+          roundRect(165, y, 750, 175, 28, isSelected ? '#10b98118' : '#1e293b', isSelected ? '#10b981' : '#334155', 3);
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 32px system-ui';
+          ctx.fillText(item.name, 200, y + 58);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '400 24px system-ui';
+          ctx.fillText(item.desc, 200, y + 98);
+
+          ctx.fillStyle = '#34d399';
+          ctx.font = '800 32px system-ui';
+          ctx.fillText(item.price, 200, y + 144);
+
+          // Botón + / ✓
+          roundRect(755, y + 52, 125, 70, 20, isSelected ? '#10b981' : '#334155');
+          drawCenteredText(isSelected ? '✓ 1' : '+ Pedir', 817, y + 97, 110, 30, '800 26px system-ui', isSelected ? '#052e16' : '#ffffff');
         });
 
-        roundRect(220, 960, 640, 100, 24, '#10b981');
-        drawCenteredText('📲 Enviar Pedido a WhatsApp', 540, 1022, 600, 40, '800 36px system-ui', '#052e16');
+        // Barra de carrito inferior en el celular
+        const readyToSend = localT >= 4.2;
+        roundRect(165, 1050, 750, 125, 30, readyToSend ? '#10b981' : '#1e293b');
+        ctx.textAlign = 'left';
+        ctx.fillStyle = readyToSend ? '#052e16' : '#ffffff';
+        ctx.font = '800 30px system-ui';
+        ctx.fillText(`🛒 ${count} productos • Total: $${total.toFixed(2)}`, 200, 1122);
 
-        drawCenteredText('Pedidos ordenados en 1 clic y sin comisiones', 540, 1280, 900, 72, '800 58px system-ui', '#ffffff');
+        ctx.textAlign = 'right';
+        ctx.font = '900 28px system-ui';
+        ctx.fillText(readyToSend ? '📲 Enviar a WhatsApp →' : 'Elige tus platos', 880, 1122);
+
+        // Titular inferior de beneficio
+        drawCenteredText('Menú Digital + Pedido directo a WhatsApp', 540, 1470, 920, 72, '800 56px system-ui', '#ffffff');
+        drawCenteredText('Rápido, visual y sin pagar comisiones por venta', 540, 1630, 880, 48, '500 36px system-ui', '#34d399');
       }
 
-      // ESCENA 3: 9s - 15s (Fidelización Digital)
-      else if (sec < 15) {
-        roundRect(140, 380, 800, 660, 44, '#1e293b', '#f59e0b');
-        drawCenteredText('⭐ TARJETA DE FIDELIZACIÓN', 540, 480, 720, 50, '800 38px system-ui', '#fbbf24');
+      // ==========================================
+      // ESCENA 3: 9.5s - 15.5s (Muestra Sistema de Fidelización - Brasa & Café)
+      // ==========================================
+      else if (sec < 15.5) {
+        drawTopBadge();
+        const localT = sec - 9.5;
 
-        // 5 sellos animados
-        const filled = Math.min(5, Math.floor((sec - 9) * 1.2) + 1);
+        // Tarjeta Digital Wallet / Fidelización
+        roundRect(130, 220, 820, 980, 50, '#111827', '#f59e0b', 5);
+
+        // Encabezado de tarjeta
+        roundRect(165, 260, 750, 180, 34, '#f59e0b1a');
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '800 24px system-ui';
+        ctx.fillText('TARJETA DIGITAL DE CLIENTE FRECUENTE', 205, 315);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 44px system-ui';
+        ctx.fillText('🔥 Brasa & Café Rewards', 205, 372);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '500 24px system-ui';
+        ctx.fillText('Cliente: Camila Mendoza  •  Nivel Oro', 205, 412);
+
+        // 5 Sellos interactivos
+        const filled = Math.min(5, Math.floor(localT * 1.15) + 1);
         for (let i = 0; i < 5; i++) {
-          const cx = 260 + i * 140;
-          const cy = 670;
+          const cx = 245 + i * 147;
+          const cy = 585;
+          const active = i < filled;
+
           ctx.beginPath();
-          ctx.arc(cx, cy, 52, 0, Math.PI * 2);
-          ctx.fillStyle = i < filled ? '#f59e0b' : '#0f172a';
+          ctx.arc(cx, cy, 56, 0, Math.PI * 2);
+          ctx.fillStyle = active ? '#f59e0b' : '#1e293b';
           ctx.fill();
-          drawCenteredText(i < filled ? '✓' : `${i + 1}`, cx, cy + 16, 80, 40, '800 42px system-ui', i < filled ? '#090d16' : '#64748b');
+          if (active) {
+            ctx.strokeStyle = '#fef3c7';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+          }
+          drawCenteredText(active ? '★' : `${i + 1}`, cx, cy + 16, 80, 40, '900 44px system-ui', active ? '#090d16' : '#64748b');
         }
 
+        // Progreso y recompensa
+        roundRect(185, 710, 710, 165, 28, filled === 5 ? '#10b98122' : '#1e293b', filled === 5 ? '#10b981' : '#334155', 3);
         drawCenteredText(
-          filled === 5 ? '🎉 ¡Premio Desbloqueado!' : `Progreso del cliente: ${filled}/5 visitas`,
-          540, 860, 720, 45, '700 38px system-ui', filled === 5 ? '#34d399' : '#cbd5e1'
+          filled === 5 ? '🎉 ¡5/5 SELLOS COMPLETOS!' : `Progreso actual: ${filled} de 5 visitas`,
+          540, 775, 660, 42, '800 34px system-ui', filled === 5 ? '#34d399' : '#fbbf24'
+        );
+        drawCenteredText(
+          filled === 5 ? 'Premio activo: 1 Café o Postre GRATIS en caja' : 'Completa 5 visitas y desbloquea tu premio',
+          540, 830, 660, 38, '500 28px system-ui', '#e2e8f0'
         );
 
-        drawCenteredText('Haz que tus clientes vuelvan una y otra vez', 540, 1220, 900, 72, '800 58px system-ui', '#ffffff');
+        // Código QR simulado + validación instantánea
+        roundRect(435, 925, 210, 210, 24, '#ffffff');
+        ctx.fillStyle = '#090d16';
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 5; c++) {
+            if ((r + c) % 2 === 0 || (r === 2 && c === 2)) {
+              ctx.fillRect(465 + c * 32, 955 + r * 32, 22, 22);
+            }
+          }
+        }
+
+        // Titular inferior
+        drawCenteredText('Sistema de Fidelización Digital', 540, 1360, 920, 72, '800 58px system-ui', '#ffffff');
+        drawCenteredText('Sin tarjetas de cartón • Tus clientes vuelven solos', 540, 1465, 900, 48, '500 36px system-ui', '#fbbf24');
       }
 
-      // ESCENA 4: 15s - 21s (Ecosistema Completo: Automatización y Software)
+      // ==========================================
+      // ESCENA 4: 15.5s - 21s (Ecosistema Completo AbbaMend)
+      // ==========================================
       else if (sec < 21) {
-        drawCenteredText('MUCHO MÁS QUE PLANTILLAS', 540, 420, 900, 50, '800 36px system-ui', '#38bdf8');
-        drawCenteredText('Soluciones digitales escalables para tu operación', 540, 530, 920, 68, '800 54px system-ui', '#ffffff');
+        drawTopBadge();
+        drawCenteredText('ECOSISTEMA COMPLETO', 540, 260, 900, 45, '800 34px system-ui', '#38bdf8');
+        drawCenteredText('Todo lo que tu negocio necesita para escalar', 540, 360, 920, 72, '800 58px system-ui', '#ffffff');
 
         const pillars = [
-          { title: '🤖 Bots & Automatización', desc: 'Atención 24/7 conectada a WhatsApp y datos' },
-          { title: '💻 Web & Micro-SaaS', desc: 'Catálogos, reservas y sistemas en la nube' },
-          { title: '⚙️ Software a Medida', desc: 'Flujos diseñados exactamente para tu negocio' }
+          { icon: '🤖', title: 'Automatización & Bots IA', desc: 'Respuestas 24/7 en WhatsApp, reservas y seguimiento automático' },
+          { icon: '🌐', title: 'Web Apps & Micro-SaaS', desc: 'Catálogos, paneles administrativos y plataformas en la nube' },
+          { icon: '⚙️', title: 'Software a Medida', desc: 'Sistemas conectados a bases de datos diseñados para tu operación' }
         ];
 
         pillars.forEach((item, idx) => {
-          const y = 760 + idx * 250;
-          roundRect(130, y, 820, 200, 30, '#1e293b', '#38bdf855');
-          drawCenteredText(item.title, 540, y + 82, 760, 46, '800 42px system-ui', '#38bdf8');
-          drawCenteredText(item.desc, 540, y + 145, 760, 40, '500 32px system-ui', '#cbd5e1');
+          const y = 570 + idx * 310;
+          roundRect(120, y, 840, 250, 34, '#0f172a', '#38bdf866', 3);
+
+          roundRect(160, y + 60, 130, 130, 28, '#38bdf81a');
+          drawCenteredText(item.icon, 225, y + 145, 110, 60, '700 62px system-ui', '#ffffff');
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = '800 38px system-ui';
+          ctx.fillText(item.title, 325, y + 102);
+
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = '500 28px system-ui';
+          const words = item.desc.split(' ');
+          let line1 = words.slice(0, 5).join(' ');
+          let line2 = words.slice(5).join(' ');
+          ctx.fillText(line1, 325, y + 152);
+          ctx.fillText(line2, 325, y + 190);
         });
       }
 
-      // ESCENA 5: 21s - 25s (Cierre y Marca)
+      // ==========================================
+      // ESCENA 5: 21s - 25s (Cierre Oficial con Logo AbbaMend)
+      // ==========================================
       else {
-        roundRect(140, 620, 800, 420, 44, '#10b98118', '#10b981');
-        drawCenteredText('AbbaMend', 540, 780, 760, 80, '900 84px system-ui', '#ffffff');
-        drawCenteredText('Full-Stack AI Builder', 540, 865, 760, 50, '700 44px system-ui', '#10b981');
-        drawCenteredText('Menús • Fidelización • Automatización • IA', 540, 960, 760, 40, '500 30px system-ui', '#cbd5e1');
+        roundRect(110, 430, 860, 740, 54, '#0f172a', '#10b981', 5);
 
-        roundRect(210, 1160, 660, 120, 60, '#10b981');
-        drawCenteredText('Solicita tu Demo por WhatsApp →', 540, 1232, 620, 40, '800 36px system-ui', '#052e16');
+        // Logo central grande de AbbaMend
+        drawAbbaMendLogo(540, 640, 1.45, true);
+
+        drawCenteredText('Menús Digitales • Fidelización • Automatización • Software', 540, 990, 780, 44, '600 30px system-ui', '#cbd5e1');
+
+        // Botón CTA pulsante
+        const pulse = 1 + Math.sin(sec * 10) * 0.025;
+        ctx.save();
+        ctx.translate(540, 1320);
+        ctx.scale(pulse, pulse);
+        roundRect(-360, -68, 720, 136, 68, '#10b981');
+        drawCenteredText('📲 Solicita tu Demo por WhatsApp', 0, 14, 680, 40, '900 38px system-ui', '#052e16');
+        ctx.restore();
+
+        drawCenteredText('Digitaliza y automatiza tu negocio hoy', 540, 1510, 860, 45, '500 34px system-ui', '#94a3b8');
       }
     }
 
@@ -219,7 +429,7 @@
     }
 
     document.getElementById('btnPlay').onclick = () => {
-      statusEl.textContent = 'Reproduciendo vista previa...';
+      statusEl.textContent = 'Reproduciendo vista previa (25s)...';
       playAnimation(() => { statusEl.textContent = 'Vista previa finalizada.'; });
     };
 
@@ -234,7 +444,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-25s.webm';
+        a.download = 'abbamend-promo-brasa-cafe-25s.webm';
         a.click();
         statusEl.textContent = '¡Video descargado! Listo para subir a Supabase Storage o redes.';
       };
@@ -244,9 +454,8 @@
       playAnimation(() => recorder.stop());
     };
 
-    // Dibujar primer fotograma al cargar
-    renderFrame(0);
+    // Dibujar vista inicial en el segundo 4 para previsualizar el mockup al abrir
+    renderFrame(4600);
   </script>
 </body>
 </html>
-
