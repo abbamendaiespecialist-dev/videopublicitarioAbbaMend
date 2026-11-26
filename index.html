@@ -52,7 +52,7 @@
     <button id="btnPlay">▶ Vista Previa (25s)</button>
     <button id="btnRecord">⏺ Grabar y Descargar (.webm)</button>
   </div>
-  <div id="status">Sube logoAbbaMend.png junto a index.html para usar tu logo real.</div>
+  <div id="status">Sube logoAbbaMend1.png junto a index.html para usar tu logo real.</div>
 
   <script>
     const canvas = document.getElementById('stage');
@@ -66,11 +66,11 @@
     // Cargar logo real de AbbaMend respetando proporciones
     const abbaLogo = new Image();
     abbaLogo.crossOrigin = 'anonymous';
-    abbaLogo.src = './logoAbbaMend.png';
+    abbaLogo.src = './logoAbbaMend1.png';
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend.png cargado. Listo para previsualizar o grabar.';
+      statusEl.textContent = 'Logo logoAbbaMend1.png cargado. Listo para previsualizar o grabar.';
       renderFrame(performance.now() - (startTime || performance.now()));
     };
 
