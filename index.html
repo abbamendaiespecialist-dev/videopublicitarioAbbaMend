@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo Generator — Robot Animado + CTA WhatsApp</title>
+  <title>AbbaMend Promo Generator — Robot Mascota + CTA WhatsApp</title>
   <style>
     body {
       margin: 0;
@@ -23,7 +23,7 @@
       aspect-ratio: 9 / 16;
       border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
       border: 1px solid #1e293b;
       background: #070b14;
     }
@@ -94,13 +94,13 @@
     <button id="btnPlay">▶ Vista Previa (25s)</button>
     <button id="btnRecord">⏺ Grabar y Descargar (.webm)</button>
   </div>
-  <div id="status">Configura tu número de WhatsApp en el código para activar el enlace directo.</div>
+  <div id="status">Cargando logoAbbaMend1.png...</div>
 
   <script>
     // =========================================================================
     // CONFIGURA AQUÍ TU NÚMERO DE WHATSAPP (ej. Ecuador: '5939XXXXXXXX')
     // =========================================================================
-    const WHATSAPP_PHONE = 'TU_NUMERO_WHATSAPP';
+    const WHATSAPP_PHONE = '593981833974';
     const WHATSAPP_MESSAGE = 'Hola AbbaMend, vi la demo y quiero solicitar una demo para mi negocio.';
     const WHATSAPP_URL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
@@ -115,15 +115,18 @@
     let startTime = null;
     let animId = null;
 
-    // Cargar logo real de AbbaMend respetando proporciones
+    // Cargar logo real logoAbbaMend1.png respetando proporciones
     const abbaLogo = new Image();
     abbaLogo.crossOrigin = 'anonymous';
-    abbaLogo.src = './logoAbbaMend.png';
+    abbaLogo.src = './logoAbbaMend1.png';
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend.png cargado. Listo para previsualizar o grabar.';
+      statusEl.textContent = 'Logo logoAbbaMend1.png cargado correctamente. Listo para previsualizar o grabar.';
       renderFrame(performance.now() - (startTime || performance.now()));
+    };
+    abbaLogo.onerror = () => {
+      statusEl.textContent = 'Aviso: No se encontró logoAbbaMend1.png en la raíz; usando emblema de respaldo.';
     };
 
     function roundRect(x, y, w, h, r, fill, stroke = null, lineWidth = 3) {
@@ -199,97 +202,124 @@
       ctx.drawImage(abbaLogo, cx - w / 2, cy - h / 2, w, h);
     }
 
-    // Robot IA animado por código
-    function drawAnimatedRobot(cx, cy, sec, scale = 1) {
-      const floatY = Math.sin(sec * 4.2) * 14;
-      const tilt = Math.sin(sec * 2.5) * 0.05;
-      const armWave = Math.sin(sec * 6.5) * 0.35;
-      const blinkCycle = sec % 3.2;
-      const isBlinking = blinkCycle > 3.05;
-      const eyeLookX = Math.sin(sec * 2.2) * 7;
+    /**
+     * Robot Mascota Oficial de AbbaMend
+     * pointDir: 'left' (señala a la izquierda), 'down' (señala abajo), 'center' (saluda/aprueba)
+     */
+    function drawAbbaMendRobot(cx, cy, sec, scale = 1, pointDir = 'left', badgeText = '✓') {
+      const floatY = Math.sin(sec * 4.5) * 11;
+      const tilt = Math.sin(sec * 2.6) * 0.045;
+      const nod = Math.sin(sec * 5.2) * 3;
+      const blinkCycle = sec % 3.1;
+      const isBlinking = blinkCycle > 2.95;
+      const eyeLookX = pointDir === 'left' ? -6 : (pointDir === 'down' ? 0 : Math.sin(sec * 2.5) * 5);
+      const eyeLookY = pointDir === 'down' ? 4 : 0;
 
       ctx.save();
       ctx.translate(cx, cy + floatY);
       ctx.rotate(tilt);
       ctx.scale(scale, scale);
 
-      // Sombra / aura inferior
-      const aura = ctx.createRadialGradient(0, 115, 8, 0, 115, 95);
-      aura.addColorStop(0, 'rgba(34, 211, 238, 0.38)');
-      aura.addColorStop(1, 'rgba(34, 211, 238, 0)');
+      // Aura tecnológica inferior
+      const aura = ctx.createRadialGradient(0, 118, 8, 0, 118, 92);
+      aura.addColorStop(0, 'rgba(6, 182, 212, 0.42)');
+      aura.addColorStop(1, 'rgba(6, 182, 212, 0)');
       ctx.fillStyle = aura;
       ctx.beginPath();
-      ctx.ellipse(0, 115, 95, 24, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 118, 92, 22, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Antena
+      // Antena con señal IA
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 7;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(0, -56);
-      ctx.lineTo(0, -96);
+      ctx.moveTo(0, -56 + nod);
+      ctx.lineTo(0, -94 + nod);
       ctx.stroke();
 
-      const tipPulse = 9 + Math.sin(sec * 9) * 2.5;
-      ctx.fillStyle = '#f59e0b';
-      ctx.beginPath();
-      ctx.arc(0, -102, tipPulse, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Brazo izquierdo
-      ctx.save();
-      ctx.translate(-68, 22);
-      ctx.rotate(-0.4 + armWave);
-      roundRect(-14, 0, 24, 62, 12, '#0284c7', '#38bdf8', 2);
-      ctx.restore();
-
-      // Brazo derecho saludando / señalando
-      ctx.save();
-      ctx.translate(68, 22);
-      ctx.rotate(0.5 - armWave);
-      roundRect(-10, 0, 24, 62, 12, '#0284c7', '#38bdf8', 2);
-      ctx.restore();
-
-      // Torso compacto
-      roundRect(-48, 12, 96, 76, 24, '#0f172a', '#22d3ee', 3);
-      // Indicador luminoso en pecho
+      const tipPulse = 8.5 + Math.sin(sec * 10) * 2.5;
       ctx.fillStyle = '#10b981';
       ctx.beginPath();
-      ctx.arc(0, 50, 11, 0, Math.PI * 2);
+      ctx.arc(0, -100 + nod, tipPulse, 0, Math.PI * 2);
       ctx.fill();
 
+      // Brazo Izquierdo (señala hacia el contenido si pointDir === 'left')
+      ctx.save();
+      ctx.translate(-66, 24);
+      const leftAngle = pointDir === 'left'
+        ? 1.05 + Math.sin(sec * 7) * 0.14
+        : (pointDir === 'down' ? 0.25 + Math.sin(sec * 6) * 0.12 : -0.35 + Math.sin(sec * 6) * 0.25);
+      ctx.rotate(leftAngle);
+      roundRect(-12, 0, 24, 62, 12, '#0284c7', '#38bdf8', 2.5);
+      // Mano señalando
+      ctx.fillStyle = '#bae6fd';
+      ctx.beginPath();
+      ctx.arc(0, 66, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Brazo Derecho (pulgar arriba / aprobación)
+      ctx.save();
+      ctx.translate(66, 24);
+      const rightAngle = pointDir === 'down'
+        ? -0.25 - Math.sin(sec * 6) * 0.12
+        : -0.75 - Math.sin(sec * 6.5) * 0.18;
+      ctx.rotate(rightAngle);
+      roundRect(-12, 0, 24, 62, 12, '#0284c7', '#38bdf8', 2.5);
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(0, 66, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Torso con emblema "A" de AbbaMend en el pecho
+      roundRect(-52, 12, 104, 82, 26, '#0f172a', '#22d3ee', 3.5);
+      roundRect(-26, 26, 52, 52, 14, '#06b6d422', '#38bdf8', 2);
+      drawTextBlock('A', 0, 64, 48, 40, '900 34px system-ui', '#22d3ee', 'center');
+
       // Cabeza del robot
-      const headGrad = ctx.createLinearGradient(-75, -58, 75, 16);
+      const headGrad = ctx.createLinearGradient(-76, -58 + nod, 76, 16 + nod);
       headGrad.addColorStop(0, '#0ea5e9');
-      headGrad.addColorStop(1, '#0284c7');
-      roundRect(-76, -58, 152, 76, 34, headGrad, '#bae6fd', 3);
+      headGrad.addColorStop(1, '#1d4ed8');
+      roundRect(-78, -58 + nod, 156, 78, 36, headGrad, '#bae6fd', 3);
 
-      // Visor oscuro
-      roundRect(-58, -42, 116, 44, 20, '#060a13', '#0f172a', 2);
+      // Visor digital
+      roundRect(-58, -42 + nod, 116, 46, 20, '#060a13', '#0f172a', 2);
 
-      // Ojos animados
+      // Ojos expresivos
       if (isBlinking) {
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 5;
         ctx.beginPath();
-        ctx.moveTo(-36 + eyeLookX, -20);
-        ctx.lineTo(-14 + eyeLookX, -20);
-        ctx.moveTo(14 + eyeLookX, -20);
-        ctx.lineTo(36 + eyeLookX, -20);
+        ctx.moveTo(-36 + eyeLookX, -19 + nod);
+        ctx.lineTo(-14 + eyeLookX, -19 + nod);
+        ctx.moveTo(14 + eyeLookX, -19 + nod);
+        ctx.lineTo(36 + eyeLookX, -19 + nod);
         ctx.stroke();
       } else {
         ctx.fillStyle = '#22d3ee';
         ctx.beginPath();
-        ctx.arc(-25 + eyeLookX, -20, 10, 0, Math.PI * 2);
-        ctx.arc(25 + eyeLookX, -20, 10, 0, Math.PI * 2);
+        ctx.arc(-25 + eyeLookX, -19 + nod + eyeLookY, 10.5, 0, Math.PI * 2);
+        ctx.arc(25 + eyeLookX, -19 + nod + eyeLookY, 10.5, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(-22 + eyeLookX, -23, 3.5, 0, Math.PI * 2);
-        ctx.arc(28 + eyeLookX, -23, 3.5, 0, Math.PI * 2);
+        ctx.arc(-22 + eyeLookX, -22 + nod + eyeLookY, 3.5, 0, Math.PI * 2);
+        ctx.arc(28 + eyeLookX, -22 + nod + eyeLookY, 3.5, 0, Math.PI * 2);
         ctx.fill();
+      }
+
+      // Insignia flotante de aprobación ("✓ Correcto") al lado del robot
+      if (badgeText) {
+        const badgeScale = 1 + Math.sin(sec * 8) * 0.06;
+        ctx.save();
+        ctx.translate(-88, -76);
+        ctx.scale(badgeScale, badgeScale);
+        roundRect(-42, -22, 84, 44, 22, '#10b981', '#ecfdf5', 2.5);
+        drawTextBlock(badgeText, 0, 9, 76, 28, '900 22px system-ui', '#042316', 'center');
+        ctx.restore();
       }
 
       ctx.restore();
@@ -300,7 +330,7 @@
       ctx.fillRect(0, 0, 1080, 10);
       const progGrad = ctx.createLinearGradient(0, 0, 1080, 0);
       progGrad.addColorStop(0, '#06b6d4');
-      progGrad.addColorStop(1, '#f59e0b');
+      progGrad.addColorStop(1, '#10b981');
       ctx.fillStyle = progGrad;
       ctx.fillRect(0, 0, (Math.min(sec * 1000, DURATION) / DURATION) * 1080, 10);
 
@@ -330,17 +360,22 @@
 
       drawTopBar(sec);
 
-      // ESCENA 1 (0s - 4s)
+      // ==================================================
+      // ESCENA 1 (0s - 4s): Hero Marca Ficticia + Robot AbbaMend aprobando
+      // ==================================================
       if (sec < 4) {
         roundRect(64, 180, 952, 1110, 44, '#0f172a', '#1e293b', 2);
 
-        roundRect(104, 224, 670, 56, 28, '#06b6d41c', '#06b6d466', 2);
-        drawTextBlock('KINETIX • SNEAKERS, STREETWEAR & DROPS', 439, 260, 630, 28, '800 21px system-ui', '#22d3ee', 'center');
+        roundRect(104, 224, 650, 56, 28, '#06b6d41c', '#06b6d466', 2);
+        drawTextBlock('KINETIX • SNEAKERS, STREETWEAR & DROPS', 429, 260, 610, 28, '800 21px system-ui', '#22d3ee', 'center');
 
-        drawTextBlock('Cada paso marca tu propio estilo.', 104, 385, 870, 88, '900 76px system-ui', '#ffffff', 'left');
+        // Robot AbbaMend en el espacio superior derecho aprobando
+        drawAbbaMendRobot(895, 315, sec, 0.88, 'left', '✓ TOP');
+
+        drawTextBlock('Cada paso marca tu propio estilo.', 104, 385, 680, 84, '900 72px system-ui', '#ffffff', 'left');
         drawTextBlock(
           'Catálogo interactivo, club de clientes frecuentes y pedido directo por WhatsApp sin perder ventas.',
-          104, 600, 870, 46, '500 33px system-ui', '#cbd5e1', 'left'
+          104, 595, 860, 46, '500 33px system-ui', '#cbd5e1', 'left'
         );
 
         const cardGrad = ctx.createLinearGradient(104, 755, 976, 1105);
@@ -367,11 +402,16 @@
         );
       }
 
-      // ESCENA 2 (4s - 10.5s)
+      // ==================================================
+      // ESCENA 2 (4s - 10.5s): Catálogo / Menú + Robot señalando el flujo
+      // ==================================================
       else if (sec < 10.5) {
         const localT = sec - 4;
-        drawTextBlock('CATÁLOGO / MENÚ INTERACTIVO • KINETIX', 64, 205, 952, 32, '800 25px system-ui', '#22d3ee', 'left');
-        drawTextBlock('Eligen, suman y piden directo a tu WhatsApp.', 64, 272, 952, 66, '900 54px system-ui', '#ffffff', 'left');
+        drawTextBlock('CATÁLOGO / MENÚ INTERACTIVO • KINETIX', 64, 205, 730, 32, '800 25px system-ui', '#22d3ee', 'left');
+        drawTextBlock('Eligen, suman y piden directo a tu WhatsApp.', 64, 272, 740, 62, '900 50px system-ui', '#ffffff', 'left');
+
+        // Robot AbbaMend arriba a la derecha señalando los productos
+        drawAbbaMendRobot(910, 285, sec, 0.85, 'left', '✓ 0% COM.');
 
         const products = [
           { tag: 'DROP 01', name: 'Runner Retro 98 Cream', sub: 'Tallas 38–43 • Stock listo', price: '$68.00', at: 0.7 },
@@ -383,42 +423,44 @@
         let itemsCount = 0;
 
         products.forEach((p, idx) => {
-          const y = 395 + idx * 305;
+          const y = 415 + idx * 295;
           const active = localT >= p.at;
           if (active) {
             total += parseFloat(p.price.replace('$', ''));
             itemsCount++;
           }
 
-          roundRect(64, y, 952, 272, 34, active ? '#0c2438' : '#0f172a', active ? '#22d3ee' : '#1e293b', active ? 3.5 : 2);
+          roundRect(64, y, 952, 265, 34, active ? '#0c2438' : '#0f172a', active ? '#22d3ee' : '#1e293b', active ? 3.5 : 2);
 
-          drawTextBlock(p.tag, 102, y + 52, 600, 28, '800 22px system-ui', '#fbbf24', 'left');
-          drawTextBlock(p.name, 102, y + 102, 610, 42, '800 36px system-ui', '#ffffff', 'left');
-          drawTextBlock(p.sub, 102, y + 146, 610, 32, '500 25px system-ui', '#94a3b8', 'left');
-          drawTextBlock(p.price, 102, y + 226, 560, 40, '900 36px system-ui', '#34d399', 'left');
+          drawTextBlock(p.tag, 102, y + 50, 600, 28, '800 22px system-ui', '#fbbf24', 'left');
+          drawTextBlock(p.name, 102, y + 100, 610, 42, '800 36px system-ui', '#ffffff', 'left');
+          drawTextBlock(p.sub, 102, y + 144, 610, 32, '500 25px system-ui', '#94a3b8', 'left');
+          drawTextBlock(p.price, 102, y + 220, 560, 40, '900 36px system-ui', '#34d399', 'left');
 
-          roundRect(732, y + 174, 244, 68, 20, active ? '#10b981' : '#1e293b', active ? '#10b981' : '#334155', 2);
-          drawTextBlock(active ? '✓ Agregado' : '+ Elegir', 854, y + 217, 220, 30, '800 25px system-ui', active ? '#042316' : '#f8fafc', 'center');
+          roundRect(732, y + 170, 244, 66, 20, active ? '#10b981' : '#1e293b', active ? '#10b981' : '#334155', 2);
+          drawTextBlock(active ? '✓ Agregado' : '+ Elegir', 854, y + 212, 220, 30, '800 25px system-ui', active ? '#042316' : '#f8fafc', 'center');
         });
 
         const ready = localT >= 4.3;
-        roundRect(64, 1345, 952, 165, 36, ready ? '#10b981' : '#0f172a', ready ? '#34d399' : '#334155', 3);
+        roundRect(64, 1335, 952, 160, 36, ready ? '#10b981' : '#0f172a', ready ? '#34d399' : '#334155', 3);
         drawTextBlock(
           `Reserva rápida por WhatsApp (${itemsCount} ítems)`,
-          102, 1412, 880, 38, '800 31px system-ui', ready ? '#042316' : '#ffffff', 'left'
+          102, 1400, 880, 38, '800 31px system-ui', ready ? '#042316' : '#ffffff', 'left'
         );
         drawTextBlock(
           `Pedido armado en vivo • Total: $${total.toFixed(2)}`,
-          102, 1464, 880, 34, '700 26px system-ui', ready ? '#064e3b' : '#94a3b8', 'left'
+          102, 1452, 880, 34, '700 26px system-ui', ready ? '#064e3b' : '#94a3b8', 'left'
         );
 
         drawTextBlock(
           'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1595, 920, 46, '800 34px system-ui', '#fbbf24', 'center'
+          540, 1585, 920, 46, '800 34px system-ui', '#fbbf24', 'center'
         );
       }
 
-      // ESCENA 3 (10.5s - 16.5s)
+      // ==================================================
+      // ESCENA 3 (10.5s - 16.5s): Club de Clientes Frecuentes + Robot señalando
+      // ==================================================
       else if (sec < 16.5) {
         const localT = sec - 10.5;
         const visits = Math.min(5, Math.floor(localT * 1.2) + 1);
@@ -436,16 +478,19 @@
           820, 266, 280, 28, '900 21px system-ui', '#1e1300', 'center'
         );
 
-        drawTextBlock('Club de Clientes Frecuentes', 104, 342, 870, 56, '900 46px system-ui', '#ffffff', 'left');
-        drawTextBlock('• KINETIX', 104, 444, 870, 40, '800 32px system-ui', '#fbbf24', 'left');
+        drawTextBlock('Club de Clientes Frecuentes', 104, 342, 680, 54, '900 45px system-ui', '#ffffff', 'left');
+        drawTextBlock('• KINETIX', 104, 444, 650, 40, '800 32px system-ui', '#fbbf24', 'left');
+
+        // Robot AbbaMend dentro del espacio derecho de la tarjeta VIP aprobando la fidelización
+        drawAbbaMendRobot(890, 415, sec, 0.78, 'left', '✓ VIP');
 
         for (let i = 0; i < 5; i++) {
           const cx = 176 + i * 182;
-          const cy = 602;
+          const cy = 608;
           const earned = i < visits;
 
           ctx.beginPath();
-          ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+          ctx.arc(cx, cy, 58, 0, Math.PI * 2);
           ctx.fillStyle = earned ? '#f59e0b' : '#090e1a';
           ctx.fill();
           ctx.lineWidth = 3;
@@ -478,13 +523,14 @@
         );
       }
 
-      // ESCENA 4 (16.5s - 21s): Ecosistema + Robot Animado
+      // ==================================================
+      // ESCENA 4 (16.5s - 21s): Ecosistema Completo + Robot AbbaMend
+      // ==================================================
       else if (sec < 21) {
         drawTextBlock('ECOSISTEMA COMPLETO • ABBAMEND', 64, 205, 720, 32, '800 25px system-ui', '#22d3ee', 'left');
         drawTextBlock('Automatización y software a medida.', 64, 272, 730, 62, '900 50px system-ui', '#ffffff', 'left');
 
-        // Robot moviéndose en la esquina superior derecha
-        drawAnimatedRobot(885, 295, sec, 1.05);
+        drawAbbaMendRobot(895, 295, sec, 0.98, 'left', '✓ IA 24/7');
 
         const capabilities = [
           { num: '01', accent: '#22d3ee', title: 'Automatización & Flujos IA', desc: 'Atención automatizada, captura de leads y procesos conectados 24/7.' },
@@ -509,12 +555,14 @@
         );
       }
 
-      // ESCENA 5 (21s - 25s): Cierre con Logo + Robot + CTA WhatsApp
+      // ==================================================
+      // ESCENA 5 (21s - 25s): Cierre con Logo Real + Robot señalando el botón
+      // ==================================================
       else {
         roundRect(64, 210, 952, 1410, 48, '#0f172a', '#22d3ee66', 3);
 
-        drawRealLogoBox(455, 455, 360, 270, '#ffffff');
-        drawAnimatedRobot(815, 470, sec, 1.15);
+        drawRealLogoBox(435, 455, 360, 270, '#ffffff');
+        drawAbbaMendRobot(815, 465, sec, 1.08, 'down', '✓ AQUÍ');
 
         drawTextBlock('AbbaMend Full-Stack AI Builder', 540, 685, 860, 60, '900 48px system-ui', '#ffffff', 'center');
         drawTextBlock(
@@ -575,7 +623,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-robot-25s.webm';
+        a.download = 'abbamend-promo-25s.webm';
         a.click();
         statusEl.textContent = '¡Video descargado! Listo para subir a Supabase Storage o redes.';
       };
@@ -585,8 +633,8 @@
       playAnimation(() => recorder.stop());
     };
 
-    // Inicia en la escena del robot (18s) para ver el movimiento de inmediato
-    renderFrame(18000);
+    // Inicia en el segundo 12 para previsualizar el robot en acción con el club VIP
+    renderFrame(12000);
   </script>
 </body>
 </html>
