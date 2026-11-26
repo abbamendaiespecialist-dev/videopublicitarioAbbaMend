@@ -1,1 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AbbaMend Promo Video Generator</title>
+  <style>
+    body {
+      margin: 0;
+      background: #090d16;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 16px;
+    }
+    canvas {
+      height: 72vh;
+      aspect-ratio: 9 / 16;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      border: 1px solid #1e293b;
+      background: #0f172a;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
+    button {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+      transition: transform 0.15s ease;
+    }
+    button:active { transform: scale(0.97); }
+    #btnPlay { background: #334155; color: #fff; }
+    #btnRecord { background: #10b981; color: #052e16; }
+    #status { font-size: 13px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <canvas id="stage" width="1080" height="1920"></canvas>
+
+  <div class="controls">
+    <button id="btnPlay">▶ Vista Previa (25s)</button>
+    <button id="btnRecord">⏺ Grabar y Descargar (.webm)</button>
+  </div>
+  <div id="status">Listo para previsualizar o exportar en 1080x1920 (60 FPS).</div>
+
+  <script>
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+
+    const DURATION = 25000; // 25 segundos
+    let startTime = null;
+    let animId = null;
+
+    // Utilidad para texto multilínea centrado
+    function drawCenteredText(text, x, y, maxWidth, lineHeight, font, color) {
+      ctx.font = font;
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        if (ctx.measureText(testLine).width > maxWidth && n > 0) {
+          lines.push(line.trim());
+          line = words[n] + ' ';
+        } else {
+          line = testLine;
+        }
+      }
+      lines.push(line.trim());
+
+      lines.forEach((l, idx) => {
+        ctx.fillText(l, x, y + idx * lineHeight);
+      });
+    }
+
+    // Tarjeta redondeada
+    function roundRect(x, y, w, h, r, fill, stroke = null) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 4; ctx.stroke(); }
+    }
+
+    function renderFrame(elapsed) {
+      const t = Math.min(elapsed, DURATION);
+      const sec = t / 1000;
+
+      // Fondo base degradado
+      const bg = ctx.createLinearGradient(0, 0, 1080, 1920);
+      bg.addColorStop(0, '#090d16');
+      bg.addColorStop(1, '#111827');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Barra superior de progreso
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(0, 0, 1080, 14);
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(0, 0, (t / DURATION) * 1080, 14);
+
+      // ESCENA 1: 0s - 3s (Gancho)
+      if (sec < 3) {
+        const pulse = 1 + Math.sin(sec * 12) * 0.03;
+        ctx.save();
+        ctx.translate(540, 680);
+        ctx.scale(pulse, pulse);
+        roundRect(-360, -90, 720, 180, 30, '#ef444422', '#ef4444');
+        drawCenteredText('💬 +48 chats sin responder...', 0, 15, 660, 50, '700 42px system-ui', '#fca5a5');
+        ctx.restore();
+
+        drawCenteredText('¿Sigues perdiendo ventas respondiendo lo mismo cada día?', 540, 1020, 900, 78, '800 64px system-ui', '#ffffff');
+      }
+
+      // ESCENA 2: 3s - 9s (Menú Digital)
+      else if (sec < 9) {
+        const p = Math.min((sec - 3) / 0.6, 1);
+        roundRect(140, 340, 800, 780, 44, '#1e293b', '#10b981');
+        drawCenteredText('🍔 MENÚ DIGITAL INTERACTIVO', 540, 440, 720, 50, '800 38px system-ui', '#10b981');
+
+        // Ítems simulados
+        const items = ['Combo Especial  •  $6.50', 'Bebida Artesanal  •  $2.50', 'Postre de la Casa  •  $3.00'];
+        items.forEach((item, i) => {
+          const offset = (1 - p) * 80 * (i + 1);
+          roundRect(200, 510 + i * 140 + offset, 680, 110, 22, '#0f172a');
+          drawCenteredText(item, 540, 578 + i * 140 + offset, 620, 40, '600 36px system-ui', '#e2e8f0');
+        });
+
+        roundRect(220, 960, 640, 100, 24, '#10b981');
+        drawCenteredText('📲 Enviar Pedido a WhatsApp', 540, 1022, 600, 40, '800 36px system-ui', '#052e16');
+
+        drawCenteredText('Pedidos ordenados en 1 clic y sin comisiones', 540, 1280, 900, 72, '800 58px system-ui', '#ffffff');
+      }
+
+      // ESCENA 3: 9s - 15s (Fidelización Digital)
+      else if (sec < 15) {
+        roundRect(140, 380, 800, 660, 44, '#1e293b', '#f59e0b');
+        drawCenteredText('⭐ TARJETA DE FIDELIZACIÓN', 540, 480, 720, 50, '800 38px system-ui', '#fbbf24');
+
+        // 5 sellos animados
+        const filled = Math.min(5, Math.floor((sec - 9) * 1.2) + 1);
+        for (let i = 0; i < 5; i++) {
+          const cx = 260 + i * 140;
+          const cy = 670;
+          ctx.beginPath();
+          ctx.arc(cx, cy, 52, 0, Math.PI * 2);
+          ctx.fillStyle = i < filled ? '#f59e0b' : '#0f172a';
+          ctx.fill();
+          drawCenteredText(i < filled ? '✓' : `${i + 1}`, cx, cy + 16, 80, 40, '800 42px system-ui', i < filled ? '#090d16' : '#64748b');
+        }
+
+        drawCenteredText(
+          filled === 5 ? '🎉 ¡Premio Desbloqueado!' : `Progreso del cliente: ${filled}/5 visitas`,
+          540, 860, 720, 45, '700 38px system-ui', filled === 5 ? '#34d399' : '#cbd5e1'
+        );
+
+        drawCenteredText('Haz que tus clientes vuelvan una y otra vez', 540, 1220, 900, 72, '800 58px system-ui', '#ffffff');
+      }
+
+      // ESCENA 4: 15s - 21s (Ecosistema Completo: Automatización y Software)
+      else if (sec < 21) {
+        drawCenteredText('MUCHO MÁS QUE PLANTILLAS', 540, 420, 900, 50, '800 36px system-ui', '#38bdf8');
+        drawCenteredText('Soluciones digitales escalables para tu operación', 540, 530, 920, 68, '800 54px system-ui', '#ffffff');
+
+        const pillars = [
+          { title: '🤖 Bots & Automatización', desc: 'Atención 24/7 conectada a WhatsApp y datos' },
+          { title: '💻 Web & Micro-SaaS', desc: 'Catálogos, reservas y sistemas en la nube' },
+          { title: '⚙️ Software a Medida', desc: 'Flujos diseñados exactamente para tu negocio' }
+        ];
+
+        pillars.forEach((item, idx) => {
+          const y = 760 + idx * 250;
+          roundRect(130, y, 820, 200, 30, '#1e293b', '#38bdf855');
+          drawCenteredText(item.title, 540, y + 82, 760, 46, '800 42px system-ui', '#38bdf8');
+          drawCenteredText(item.desc, 540, y + 145, 760, 40, '500 32px system-ui', '#cbd5e1');
+        });
+      }
+
+      // ESCENA 5: 21s - 25s (Cierre y Marca)
+      else {
+        roundRect(140, 620, 800, 420, 44, '#10b98118', '#10b981');
+        drawCenteredText('AbbaMend', 540, 780, 760, 80, '900 84px system-ui', '#ffffff');
+        drawCenteredText('Full-Stack AI Builder', 540, 865, 760, 50, '700 44px system-ui', '#10b981');
+        drawCenteredText('Menús • Fidelización • Automatización • IA', 540, 960, 760, 40, '500 30px system-ui', '#cbd5e1');
+
+        roundRect(210, 1160, 660, 120, 60, '#10b981');
+        drawCenteredText('Solicita tu Demo por WhatsApp →', 540, 1232, 620, 40, '800 36px system-ui', '#052e16');
+      }
+    }
+
+    function playAnimation(onComplete) {
+      cancelAnimationFrame(animId);
+      startTime = performance.now();
+
+      function loop(now) {
+        const elapsed = now - startTime;
+        renderFrame(elapsed);
+        if (elapsed < DURATION) {
+          animId = requestAnimationFrame(loop);
+        } else if (onComplete) {
+          onComplete();
+        }
+      }
+      animId = requestAnimationFrame(loop);
+    }
+
+    document.getElementById('btnPlay').onclick = () => {
+      statusEl.textContent = 'Reproduciendo vista previa...';
+      playAnimation(() => { statusEl.textContent = 'Vista previa finalizada.'; });
+    };
+
+    document.getElementById('btnRecord').onclick = () => {
+      const stream = canvas.captureStream(60);
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      const chunks = [];
+
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'abbamend-promo-25s.webm';
+        a.click();
+        statusEl.textContent = '¡Video descargado! Listo para subir a Supabase Storage o redes.';
+      };
+
+      statusEl.textContent = 'Grabando 25 segundos en tiempo real... No cierres la pestaña.';
+      recorder.start();
+      playAnimation(() => recorder.stop());
+    };
+
+    // Dibujar primer fotograma al cargar
+    renderFrame(0);
+  </script>
+</body>
+</html>
 
