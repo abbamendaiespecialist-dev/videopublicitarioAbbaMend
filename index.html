@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo — Robot Interactuando con App en Pantalla</title>
+  <title>AbbaMend Promo — Robot Interactuando + Logo Sin Fondo</title>
   <style>
     body {
       margin: 0;
@@ -93,7 +93,7 @@
     <button id="btnPlay">▶ Vista Previa (25s)</button>
     <button id="btnRecord">⏺ Grabar y Descargar (.webm)</button>
   </div>
-  <div id="status">Cargando logoAbbaMend1.png...</div>
+  <div id="status">Cargando logo sin fondo...</div>
 
   <script>
     // =========================================================================
@@ -114,14 +114,14 @@
     let startTime = null;
     let animId = null;
 
-    // Logo oficial de AbbaMend
+    // Logo PNG sin fondo de AbbaMend
     const abbaLogo = new Image();
     abbaLogo.crossOrigin = 'anonymous';
-    abbaLogo.src = './logoAbbaMend1.png';
+    abbaLogo.src = './logoAbbaMend (1).png';
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend1.png cargado. Robot interactuando en pantalla.';
+      statusEl.textContent = 'Logo PNG sin fondo cargado correctamente.';
       renderFrame(performance.now() - (startTime || performance.now()));
     };
 
@@ -163,13 +163,13 @@
       return lines.length * lineHeight;
     }
 
-    function drawLogoFitted(cx, cy, maxW, maxH, bgCard = '#ffffff') {
+    // Dibuja el logo sin fondo (bgCard = null por defecto) con realce sutil sobre fondo oscuro
+    function drawLogoFitted(cx, cy, maxW, maxH, bgCard = null) {
       if (bgCard) {
         roundRect(cx - maxW / 2 - 8, cy - maxH / 2 - 8, maxW + 16, maxH + 16, 20, bgCard, '#38bdf844', 2);
       }
       if (!logoLoaded) {
-        roundRect(cx - maxW / 2, cy - maxH / 2, maxW, maxH, 16, '#0f172a', '#22d3ee', 2);
-        drawTextBlock('abbá MEND', cx, cy + 8, maxW - 12, 26, '800 20px system-ui', '#22d3ee', 'center');
+        drawTextBlock('abbá MEND', cx, cy + 8, maxW, 28, '900 22px system-ui', '#22d3ee', 'center');
         return;
       }
       const ratio = abbaLogo.naturalWidth / abbaLogo.naturalHeight || 1;
@@ -179,13 +179,20 @@
         h = maxH;
         w = h * ratio;
       }
+
+      ctx.save();
+      // Aura/sombra suave para separar las letras azules/cian del fondo oscuro sin usar caja
+      ctx.shadowColor = 'rgba(34, 211, 238, 0.35)';
+      ctx.shadowBlur = 22;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 4;
       ctx.drawImage(abbaLogo, cx - w / 2, cy - h / 2, w, h);
+      ctx.restore();
     }
 
     // App interactiva de ALBA & GRANO dentro de la pantalla
     function drawAppScreen(x, y, w, h, sec, mode = 'menu') {
       ctx.save();
-      // Marco exterior de pantalla / monitor táctil
       roundRect(x - 14, y - 14, w + 28, h + 28, 34, '#0f172a', '#38bdf8', 4);
       roundRect(x, y, w, h, 24, '#faf5ef');
       ctx.clip();
@@ -249,7 +256,6 @@
           drawTextBlock(picked ? '✓ Elegido' : '+ Pedir', x + w - 96, iy + itemH * 0.56, 110, 22, '800 18px system-ui', picked ? '#042316' : '#ffffff', 'center');
         });
 
-        // Onda de toque táctil cuando el robot interactúa con un ítem
         if (activeTapY !== null) {
           const rippleR = 16 + ((localT % 0.65) / 0.65) * 28;
           ctx.strokeStyle = 'rgba(6, 182, 212, 0.85)';
@@ -313,7 +319,6 @@
       ctx.translate(rx, ry);
       ctx.scale(scale, scale);
 
-      // Sombra en el suelo que acompaña el paso del robot
       const shadow = ctx.createRadialGradient(0, 235, 8, 0, 235, 130);
       shadow.addColorStop(0, 'rgba(6, 182, 212, 0.45)');
       shadow.addColorStop(1, 'rgba(6, 182, 212, 0)');
@@ -322,7 +327,6 @@
       ctx.ellipse(0, 235, 130, 24, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Pierna izquierda (animación de caminata)
       ctx.save();
       ctx.translate(-46, 105);
       ctx.rotate(legSwing);
@@ -330,7 +334,6 @@
       roundRect(-24, 86, 54, 34, 14, '#0284c7');
       ctx.restore();
 
-      // Pierna derecha (fase opuesta)
       ctx.save();
       ctx.translate(46, 105);
       ctx.rotate(-legSwing);
@@ -338,7 +341,6 @@
       roundRect(-24, 86, 54, 34, 14, '#0284c7');
       ctx.restore();
 
-      // Brazo izquierdo (aprobación / gesto animado)
       ctx.save();
       ctx.translate(-86, 12);
       ctx.rotate(-0.55 + Math.sin(sec * 6) * 0.25);
@@ -349,7 +351,6 @@
       ctx.fill();
       ctx.restore();
 
-      // Torso del robot con emblema AbbaMend
       const torsoGrad = ctx.createLinearGradient(-84, -15, 84, 120);
       torsoGrad.addColorStop(0, '#ffffff');
       torsoGrad.addColorStop(1, '#cbd5e1');
@@ -358,12 +359,10 @@
       roundRect(-36, 22, 72, 54, 16, '#0f172a', '#22d3ee', 2.5);
       drawTextBlock('AM', 0, 58, 66, 28, '900 26px system-ui', '#22d3ee', 'center');
 
-      // Cabeza con giro e inclinación
       ctx.save();
       ctx.translate(0, -95);
       ctx.rotate(headTurn);
 
-      // Antena con pulso
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 6;
       ctx.beginPath();
@@ -399,7 +398,6 @@
       }
       ctx.restore();
 
-      // Brazo derecho extendido interactuando hacia la pantalla
       ctx.save();
       ctx.translate(82, 16);
       const reachAngle = -0.25 + Math.sin(sec * 4.2) * 0.16;
@@ -413,7 +411,6 @@
 
       ctx.restore();
 
-      // Línea sutil de interacción / señal desde el robot hacia la pantalla
       const handWorldX = rx + 175 * scale;
       const handWorldY = ry + 10 * scale;
       ctx.save();
@@ -437,10 +434,11 @@
       ctx.fillRect(0, 0, (Math.min(sec * 1000, DURATION) / DURATION) * 1080, 10);
 
       roundRect(48, 28, 984, 112, 56, '#0f172a', '#1e293b', 2);
-      drawLogoFitted(106, 84, 72, 72, '#ffffff');
+      // Logo sin fondo en la barra superior
+      drawLogoFitted(104, 84, 74, 74, null);
 
-      drawTextBlock('AbbaMend', 158, 77, 540, 32, '800 29px system-ui', '#ffffff', 'left');
-      drawTextBlock('App Menú Digital • Fidelización • Software a Medida', 158, 109, 560, 24, '500 20px system-ui', '#38bdf8', 'left');
+      drawTextBlock('AbbaMend', 156, 77, 540, 32, '800 29px system-ui', '#ffffff', 'left');
+      drawTextBlock('App Menú Digital • Fidelización • Software a Medida', 156, 109, 560, 24, '500 20px system-ui', '#38bdf8', 'left');
 
       roundRect(755, 52, 245, 64, 32, '#06b6d4');
       drawTextBlock('Demo en Vivo', 877, 92, 220, 28, '800 23px system-ui', '#04131a', 'center');
@@ -476,27 +474,24 @@
         540, 255, 960, 34, '600 26px system-ui', '#22d3ee', 'center'
       );
 
-      // Si estamos en el cierre (21s - 25s), mostramos el logo oficial arriba
       let screenTop = 330;
       let screenH = 980;
       let robotY = 1040;
 
       if (sec >= 17) {
-        drawLogoFitted(540, 355, 290, 130, '#ffffff');
-        screenTop = 450;
-        screenH = 760;
+        // Logo sin fondo flotando limpio en la escena final
+        drawLogoFitted(540, 355, 340, 145, null);
+        screenTop = 455;
+        screenH = 755;
         robotY = 1030;
       }
 
-      // Pantalla grande a la derecha donde funciona la app
       const screenX = 415;
       const screenW = 610;
       drawAppScreen(screenX, screenTop, screenW, screenH, sec, mode);
 
-      // Robot bien visible a la izquierda moviéndose e interactuando con la pantalla
       drawActiveRobot(215, robotY, sec, 1.05, screenX + 35, screenTop + screenH * 0.45);
 
-      // Frase principal solicitada
       drawTextBlock(
         'Tu negocio vende mejor con una app así; fideliza tus clientes',
         540, 1435, 940, 62, '800 48px system-ui', '#ffffff', 'center'
@@ -542,7 +537,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-robot-interactivo-25s.webm';
+        a.download = 'abbamend-robot-logo-transparente-25s.webm';
         a.click();
         statusEl.textContent = '¡Video descargado! Listo para convertir a .mp4 o publicar.';
       };
@@ -552,8 +547,8 @@
       playAnimation(() => recorder.stop());
     };
 
-    // Inicia en el segundo 4.5 para ver al robot interactuando con la app desde el primer vistazo
-    renderFrame(4500);
+    // Inicia en el segundo 18 para ver de inmediato el logo sin fondo junto al robot y la app
+    renderFrame(18000);
   </script>
 </body>
 </html>
