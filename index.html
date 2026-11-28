@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo 4K — Logo y Robot Inferiores Grandes</title>
+  <title>AbbaMend Promo 4K — Logo Centrado Grande Sin Robot Inferior</title>
   <style>
     body {
       margin: 0;
@@ -99,7 +99,7 @@
 
   <script>
     // =========================================================================
-    // CONFIGURA AQUÍ TU NÚMERO DE WHATSAPP (ej. Ecuador: '5939XXXXXXXX')
+    // CONFIGURA AQUÍ TU NÚMERO DE WHATSAPP (ej. Ecuador: '593981833974')
     // =========================================================================
     const WHATSAPP_PHONE = 'TU_NUMERO_WHATSAPP';
     const WHATSAPP_MESSAGE = 'Hola AbbaMend, vi el video de la app con menú y puntos de fidelización y quiero una demo para mi negocio.';
@@ -190,106 +190,16 @@
       ctx.restore();
     }
 
-    // Logo inferior de gran tamaño y movimiento dinámico
+    // Logo inferior grande, centrado y moviéndose
     function drawAnimatedBottomLogo(cx, cy, sec) {
-      const floatY = Math.sin(sec * 3.8) * 11;
-      const swayX = Math.cos(sec * 2.2) * 10;
+      const floatY = Math.sin(sec * 3.8) * 10;
+      const swayX = Math.cos(sec * 2.2) * 8;
       const pulseScale = 1 + Math.sin(sec * 4.5) * 0.05;
 
       ctx.save();
       ctx.translate(cx + swayX, cy + floatY);
       ctx.scale(pulseScale, pulseScale);
-      drawLogoFitted(0, 0, 500, 235, null, 45);
-      ctx.restore();
-    }
-
-    // Segundo robot de estilo táctico/industrial en gran escala y movimiento
-    function drawSecondaryRobot(cx, cy, sec, scale = 0.96) {
-      const bobY = Math.sin(sec * 4.2) * 12;
-      const slideX = Math.cos(sec * 2.5) * 14;
-      const scanOffset = Math.sin(sec * 5.5) * 18;
-      const armLeftAngle = -0.5 + Math.sin(sec * 6.0) * 0.38;
-      const armRightAngle = 0.5 - Math.sin(sec * 6.0) * 0.38;
-
-      ctx.save();
-      ctx.translate(cx + slideX, cy + bobY);
-      ctx.scale(scale, scale);
-
-      // Resplandor ámbar/cian bajo el robot secundario
-      const glow = ctx.createRadialGradient(0, 128, 8, 0, 128, 110);
-      glow.addColorStop(0, 'rgba(245, 158, 11, 0.45)');
-      glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.ellipse(0, 128, 110, 22, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Antena doble con puntas luminosas
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(-24, -68);
-      ctx.lineTo(-36, -104);
-      ctx.moveTo(24, -68);
-      ctx.lineTo(36, -104);
-      ctx.stroke();
-
-      ctx.fillStyle = '#22d3ee';
-      ctx.beginPath();
-      ctx.arc(-36, -108, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#f59e0b';
-      ctx.beginPath();
-      ctx.arc(36, -108, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Cabeza cuadrada/angular tipo dron-bot
-      roundRect(-54, -68, 108, 66, 16, '#1e293b', '#38bdf8', 3);
-      // Visor horizontal con escáner animado
-      roundRect(-42, -50, 84, 30, 10, '#090d16', '#0f172a', 2);
-      ctx.fillStyle = '#f59e0b';
-      ctx.beginPath();
-      ctx.roundRect(-14 + scanOffset, -43, 28, 16, 7);
-      ctx.fill();
-
-      // Cuello mecánico
-      roundRect(-22, -2, 44, 16, 5, '#475569');
-
-      // Brazo izquierdo articulado
-      ctx.save();
-      ctx.translate(-68, 26);
-      ctx.rotate(armLeftAngle);
-      roundRect(-12, 0, 22, 64, 9, '#334155', '#38bdf8', 2);
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(-1, 68, 11, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      // Brazo derecho articulado
-      ctx.save();
-      ctx.translate(68, 26);
-      ctx.rotate(armRightAngle);
-      roundRect(-10, 0, 22, 64, 9, '#334155', '#38bdf8', 2);
-      ctx.fillStyle = '#22d3ee';
-      ctx.beginPath();
-      ctx.arc(1, 68, 11, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      // Torso blindado con hombreras
-      roundRect(-62, 14, 124, 84, 20, '#0f172a', '#f59e0b', 3);
-      roundRect(-78, 14, 24, 36, 8, '#0284c7');
-      roundRect(54, 14, 24, 36, 8, '#0284c7');
-
-      // Panel central en el pecho
-      roundRect(-34, 30, 68, 48, 10, '#1e293b', '#22d3ee', 2);
-      drawTextBlock('AI', 0, 62, 60, 26, '900 24px system-ui', '#fbbf24', 'center');
-
-      // Base propulsora / patas compactas
-      roundRect(-42, 98, 28, 22, 6, '#334155');
-      roundRect(14, 98, 28, 22, 6, '#334155');
-
+      drawLogoFitted(0, 0, 560, 250, null, 48);
       ctx.restore();
     }
 
@@ -621,9 +531,8 @@
         540, 1415, 970, 50, '800 42px system-ui', '#ffffff', 'center'
       );
 
-      // Logo mucho más grande y moviéndose + segundo robot de gran tamaño a su lado
-      drawAnimatedBottomLogo(390, 1625, sec);
-      drawSecondaryRobot(830, 1615, sec, 0.96);
+      // Solo el logo de AbbaMend grande y en movimiento en el centro inferior
+      drawAnimatedBottomLogo(540, 1625, sec);
 
       ctx.restore();
     }
