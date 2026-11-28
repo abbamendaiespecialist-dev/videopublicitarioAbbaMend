@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo — Logo Visible Sobre el Robot + App en Pantalla</title>
+  <title>AbbaMend Promo — Logo Grande Sobre el Robot + App en Pantalla</title>
   <style>
     body {
       margin: 0;
@@ -121,7 +121,7 @@
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend.png cargado sin fondo. Listo para grabar.';
+      statusEl.textContent = 'Logo logoAbbaMend.png cargado con gran formato sobre el robot.';
       renderFrame(performance.now() - (startTime || performance.now()));
     };
 
@@ -163,8 +163,7 @@
       return lines.length * lineHeight;
     }
 
-    // Dibuja el logo sin fondo conservando relación de aspecto y realce limpio sobre fondo oscuro
-    function drawLogoFitted(cx, cy, maxW, maxH, bgCard = null, glowStrength = 26) {
+    function drawLogoFitted(cx, cy, maxW, maxH, bgCard = null, glowStrength = 34) {
       if (bgCard) {
         roundRect(cx - maxW / 2 - 8, cy - maxH / 2 - 8, maxW + 16, maxH + 16, 20, bgCard, '#38bdf844', 2);
       }
@@ -181,15 +180,14 @@
       }
 
       ctx.save();
-      ctx.shadowColor = 'rgba(34, 211, 238, 0.45)';
+      ctx.shadowColor = 'rgba(34, 211, 238, 0.5)';
       ctx.shadowBlur = glowStrength;
       ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 4;
+      ctx.shadowOffsetY = 5;
       ctx.drawImage(abbaLogo, cx - w / 2, cy - h / 2, w, h);
       ctx.restore();
     }
 
-    // App interactiva de ALBA & GRANO dentro de la pantalla
     function drawAppScreen(x, y, w, h, sec, mode = 'menu') {
       ctx.save();
       roundRect(x - 14, y - 14, w + 28, h + 28, 34, '#0f172a', '#38bdf8', 4);
@@ -231,7 +229,7 @@
         let total = 0;
         let count = 0;
         const listY = bodyY + bodyH * 0.27;
-        const itemH = Math.min(118, (bodyH * 0.48) / 3);
+        const itemH = Math.min(112, (bodyH * 0.48) / 3);
 
         let activeTapY = null;
 
@@ -247,9 +245,9 @@
           }
 
           roundRect(x + 18, iy, w - 36, itemH, 16, picked ? '#ecfdf5' : '#ffffff', picked ? '#10b981' : '#e5d8c8', 2.5);
-          drawTextBlock(it.name, x + 34, iy + 36, w * 0.62, 26, '800 21px system-ui', '#1c1917', 'left');
-          drawTextBlock(it.sub, x + 34, iy + 64, w * 0.62, 22, '500 17px system-ui', '#78716c', 'left');
-          drawTextBlock(it.price, x + 34, iy + itemH - 14, 180, 24, '900 21px system-ui', '#047857', 'left');
+          drawTextBlock(it.name, x + 34, iy + 34, w * 0.62, 25, '800 20px system-ui', '#1c1917', 'left');
+          drawTextBlock(it.sub, x + 34, iy + 60, w * 0.62, 21, '500 16px system-ui', '#78716c', 'left');
+          drawTextBlock(it.price, x + 34, iy + itemH - 12, 180, 22, '900 20px system-ui', '#047857', 'left');
 
           roundRect(x + w - 156, iy + itemH * 0.26, 120, itemH * 0.48, 12, picked ? '#10b981' : '#2c1810');
           drawTextBlock(picked ? '✓ Elegido' : '+ Pedir', x + w - 96, iy + itemH * 0.56, 110, 22, '800 18px system-ui', picked ? '#042316' : '#ffffff', 'center');
@@ -264,13 +262,13 @@
           ctx.stroke();
         }
 
-        const barY = y + h - 86;
-        roundRect(x + 18, barY, w - 36, 68, 16, count > 0 ? '#15803d' : '#2c1810');
+        const barY = y + h - 82;
+        roundRect(x + 18, barY, w - 36, 64, 16, count > 0 ? '#15803d' : '#2c1810');
         drawTextBlock(
           `WhatsApp (${count}) • $${total.toFixed(2)}`,
-          x + 34, barY + 42, w * 0.62, 24, '800 20px system-ui', '#ffffff', 'left'
+          x + 34, barY + 40, w * 0.62, 24, '800 20px system-ui', '#ffffff', 'left'
         );
-        drawTextBlock('Enviar →', x + w - 115, barY + 42, 95, 24, '900 20px system-ui', '#dcfce7', 'center');
+        drawTextBlock('Enviar →', x + w - 115, barY + 40, 95, 24, '900 20px system-ui', '#dcfce7', 'center');
       } else {
         const visits = Math.min(5, Math.floor((sec - 10.5) * 1.1) + 1);
         roundRect(x + 18, bodyY, w - 36, bodyH * 0.54, 20, '#2c1810');
@@ -303,10 +301,10 @@
       ctx.restore();
     }
 
-    // Robot moviéndose e interactuando con la pantalla + logo de AbbaMend bien visible encima de su cabeza
-    function drawActiveRobot(cx, cy, sec, scale = 1, targetScreenX = 680, targetScreenY = 760) {
-      const walkX = Math.sin(sec * 2.2) * 24;
-      const bounceY = Math.abs(Math.sin(sec * 4.4)) * -11;
+    // Robot moviéndose e interactuando con la pantalla + logo de AbbaMend bien grande encima de la cabeza
+    function drawActiveRobot(cx, cy, sec, scale = 1, targetScreenX = 680, targetScreenY = 920) {
+      const walkX = Math.sin(sec * 2.2) * 20;
+      const bounceY = Math.abs(Math.sin(sec * 4.4)) * -10;
       const legSwing = Math.sin(sec * 4.4) * 0.32;
       const headTurn = Math.sin(sec * 2.8) * 0.14;
       const blink = (sec % 3.0) > 2.84;
@@ -314,9 +312,9 @@
       const rx = cx + walkX;
       const ry = cy + bounceY;
 
-      // Logo de AbbaMend bien visible encima de la cabeza del robot (sin fondo)
-      const logoAboveY = ry - 255 * scale + Math.sin(sec * 3.5) * 6;
-      drawLogoFitted(rx, logoAboveY, 275 * scale, 155 * scale, null, 30);
+      // Logo de gran formato y alta legibilidad encima de la cabeza del robot
+      const logoAboveY = ry - 295 * scale + Math.sin(sec * 3.5) * 5;
+      drawLogoFitted(rx + 25, logoAboveY, 395 * scale, 225 * scale, null, 36);
 
       ctx.save();
       ctx.translate(rx, ry);
@@ -425,15 +423,14 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, (Math.min(sec * 1000, DURATION) / DURATION) * 1080, 10);
 
-      roundRect(48, 28, 984, 118, 59, '#0f172a', '#1e293b', 2);
-      // Logo más grande y visible sin fondo en la cabecera
-      drawLogoFitted(116, 87, 108, 92, null, 20);
+      roundRect(48, 26, 984, 112, 56, '#0f172a', '#1e293b', 2);
+      drawLogoFitted(112, 82, 104, 88, null, 20);
 
-      drawTextBlock('AbbaMend', 182, 79, 510, 32, '800 30px system-ui', '#ffffff', 'left');
-      drawTextBlock('App Menú Digital • Fidelización • Software a Medida', 182, 112, 530, 24, '500 20px system-ui', '#38bdf8', 'left');
+      drawTextBlock('AbbaMend', 176, 75, 510, 32, '800 29px system-ui', '#ffffff', 'left');
+      drawTextBlock('App Menú Digital • Fidelización • Software a Medida', 176, 107, 530, 24, '500 20px system-ui', '#38bdf8', 'left');
 
-      roundRect(755, 55, 245, 64, 32, '#06b6d4');
-      drawTextBlock('Demo en Vivo', 877, 95, 220, 28, '800 23px system-ui', '#04131a', 'center');
+      roundRect(755, 50, 245, 64, 32, '#06b6d4');
+      drawTextBlock('Demo en Vivo', 877, 90, 220, 28, '800 23px system-ui', '#04131a', 'center');
     }
 
     function renderFrame(elapsed) {
@@ -457,29 +454,23 @@
         mode === 'menu'
           ? 'El robot opera el menú digital en pantalla'
           : 'Fidelización en vivo dentro de la app',
-        540, 204, 960, 54, '900 44px system-ui', '#ffffff', 'center'
-      );
-      drawTextBlock(
-        mode === 'menu'
-          ? 'Marca demo: Alba & Grano • Pedido directo a WhatsApp'
-          : 'Suma visitas, desbloquea premios y retiene clientes',
-        540, 256, 960, 34, '600 26px system-ui', '#22d3ee', 'center'
+        540, 188, 960, 50, '900 42px system-ui', '#ffffff', 'center'
       );
 
-      // Dejamos espacio superior suficiente para que el logo encima de la cabeza del robot no choque con el header
-      const screenTop = 445;
-      const screenH = 820;
-      const robotY = 1035;
+      // Ampliamos margen superior para albergar el logotipo grande encima de la cabeza del robot sin choques
+      const screenTop = 530;
+      const screenH = 740;
+      const robotY = 1055;
 
       const screenX = 415;
       const screenW = 610;
       drawAppScreen(screenX, screenTop, screenW, screenH, sec, mode);
 
-      drawActiveRobot(215, robotY, sec, 0.98, screenX + 35, screenTop + screenH * 0.45);
+      drawActiveRobot(205, robotY, sec, 0.94, screenX + 35, screenTop + screenH * 0.45);
 
       drawTextBlock(
         'Tu negocio vende mejor con una app así; fideliza tus clientes',
-        540, 1440, 940, 62, '800 48px system-ui', '#ffffff', 'center'
+        540, 1445, 940, 62, '800 48px system-ui', '#ffffff', 'center'
       );
 
       if (sec < 21) {
@@ -522,7 +513,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-robot-logo-cabeza-25s.webm';
+        a.download = 'abbamend-promo-logo-grande-25s.webm';
         a.click();
         statusEl.textContent = '¡Video descargado! Listo para convertir a .mp4 o publicar.';
       };
@@ -532,7 +523,6 @@
       playAnimation(() => recorder.stop());
     };
 
-    // Inicia en el segundo 4.5 para ver de inmediato el logo encima de la cabeza del robot y la app interactuando
     renderFrame(4500);
   </script>
 </body>
