@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo Generator — Robot Mascota + CTA WhatsApp</title>
+  <title>AbbaMend Promo — Robot con Pantalla App Menú Digital</title>
   <style>
     body {
       margin: 0;
@@ -32,19 +32,18 @@
       height: 100%;
       display: block;
     }
-    /* Botón real clicable sincronizado con la escena final (21s - 25s) */
     #waCtaOverlay {
       position: absolute;
       left: 50%;
-      top: 72%;
+      top: 86%;
       transform: translate(-50%, -50%);
-      width: 72%;
-      padding: 16px 20px;
+      width: 74%;
+      padding: 15px 20px;
       border-radius: 999px;
       background: #10b981;
       color: #042316;
       font-weight: 900;
-      font-size: clamp(14px, 2.2vh, 22px);
+      font-size: clamp(14px, 2.1vh, 21px);
       text-align: center;
       text-decoration: none;
       box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45);
@@ -100,8 +99,8 @@
     // =========================================================================
     // CONFIGURA AQUÍ TU NÚMERO DE WHATSAPP (ej. Ecuador: '5939XXXXXXXX')
     // =========================================================================
-    const WHATSAPP_PHONE = '593981833974';
-    const WHATSAPP_MESSAGE = 'Hola AbbaMend, vi la demo y quiero solicitar una demo para mi negocio.';
+    const WHATSAPP_PHONE = 'TU_NUMERO_WHATSAPP';
+    const WHATSAPP_MESSAGE = 'Hola AbbaMend, vi el robot con la app de menú digital y quiero solicitar una demo.';
     const WHATSAPP_URL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
     const waBtn = document.getElementById('waCtaOverlay');
@@ -115,18 +114,15 @@
     let startTime = null;
     let animId = null;
 
-    // Cargar logo real logoAbbaMend1.png respetando proporciones
+    // Logo oficial de AbbaMend
     const abbaLogo = new Image();
     abbaLogo.crossOrigin = 'anonymous';
     abbaLogo.src = './logoAbbaMend1.png';
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend1.png cargado correctamente. Listo para previsualizar o grabar.';
+      statusEl.textContent = 'Logo logoAbbaMend1.png listo. Robot sosteniendo la app en pantalla.';
       renderFrame(performance.now() - (startTime || performance.now()));
-    };
-    abbaLogo.onerror = () => {
-      statusEl.textContent = 'Aviso: No se encontró logoAbbaMend1.png en la raíz; usando emblema de respaldo.';
     };
 
     function roundRect(x, y, w, h, r, fill, stroke = null, lineWidth = 3) {
@@ -149,21 +145,7 @@
           current = test;
         } else {
           if (current) lines.push(current);
-          if (ctx.measureText(word).width > maxWidth) {
-            let chunk = '';
-            for (const ch of word) {
-              const tChunk = chunk + ch;
-              if (ctx.measureText(tChunk).width <= maxWidth) {
-                chunk = tChunk;
-              } else {
-                if (chunk) lines.push(chunk);
-                chunk = ch;
-              }
-            }
-            current = chunk;
-          } else {
-            current = word;
-          }
+          current = word;
         }
       }
       if (current) lines.push(current);
@@ -181,17 +163,15 @@
       return lines.length * lineHeight;
     }
 
-    function drawRealLogoBox(cx, cy, maxW, maxH, pillBg = '#ffffff') {
-      if (pillBg) {
-        roundRect(cx - maxW / 2 - 10, cy - maxH / 2 - 10, maxW + 20, maxH + 20, 24, pillBg, '#38bdf844', 2);
+    function drawLogoFitted(cx, cy, maxW, maxH, bgCard = '#ffffff') {
+      if (bgCard) {
+        roundRect(cx - maxW / 2 - 8, cy - maxH / 2 - 8, maxW + 16, maxH + 16, 20, bgCard, '#38bdf844', 2);
       }
-
       if (!logoLoaded) {
-        roundRect(cx - maxW / 2, cy - maxH / 2, maxW, maxH, 18, '#0f172a', '#22d3ee', 2);
-        drawTextBlock('abbá MEND', cx, cy + 8, maxW - 16, 28, '800 22px system-ui', '#22d3ee', 'center');
+        roundRect(cx - maxW / 2, cy - maxH / 2, maxW, maxH, 16, '#0f172a', '#22d3ee', 2);
+        drawTextBlock('abbá MEND', cx, cy + 8, maxW - 12, 26, '800 20px system-ui', '#22d3ee', 'center');
         return;
       }
-
       const ratio = abbaLogo.naturalWidth / abbaLogo.naturalHeight || 1;
       let w = maxW;
       let h = w / ratio;
@@ -202,392 +182,315 @@
       ctx.drawImage(abbaLogo, cx - w / 2, cy - h / 2, w, h);
     }
 
-    /**
-     * Robot Mascota Oficial de AbbaMend
-     * pointDir: 'left' (señala a la izquierda), 'down' (señala abajo), 'center' (saluda/aprueba)
-     */
-    function drawAbbaMendRobot(cx, cy, sec, scale = 1, pointDir = 'left', badgeText = '✓') {
-      const floatY = Math.sin(sec * 4.5) * 11;
-      const tilt = Math.sin(sec * 2.6) * 0.045;
-      const nod = Math.sin(sec * 5.2) * 3;
-      const blinkCycle = sec % 3.1;
-      const isBlinking = blinkCycle > 2.95;
-      const eyeLookX = pointDir === 'left' ? -6 : (pointDir === 'down' ? 0 : Math.sin(sec * 2.5) * 5);
-      const eyeLookY = pointDir === 'down' ? 4 : 0;
+    // Dibuja la APP de Menú Digital + Fidelización (marca ficticia ALBA & GRANO) dentro de un área (x, y, w, h)
+    function drawInsideAppScreen(x, y, w, h, sec, mode = 'menu') {
+      ctx.save();
+      roundRect(x, y, w, h, 24, '#faf5ef');
+      ctx.clip();
+
+      // Barra superior de la app (estilo cálido editorial con marca ficticia ALBA & GRANO)
+      const topH = Math.round(h * 0.12);
+      roundRect(x, y, w, topH, 0, '#2c1810');
+
+      const badgeR = Math.min(26, Math.round(topH * 0.34));
+      ctx.beginPath();
+      ctx.arc(x + 42, y + topH / 2, badgeR, 0, Math.PI * 2);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fill();
+      drawTextBlock('AG', x + 42, y + topH / 2 + 8, badgeR * 1.8, 24, '900 20px system-ui', '#2c1810', 'center');
+
+      drawTextBlock('ALBA & GRANO', x + 80, y + topH / 2 - 2, w * 0.52, 26, '900 24px system-ui', '#ffffff', 'left');
+      drawTextBlock('Menú Digital & Club', x + 80, y + topH / 2 + 22, w * 0.52, 20, '500 16px system-ui', '#fde68a', 'left');
+
+      roundRect(x + w - 165, y + topH * 0.22, 142, topH * 0.56, 14, '#10b981');
+      drawTextBlock(mode === 'menu' ? '● Carta' : '★ Club', x + w - 94, y + topH / 2 + 7, 130, 22, '800 18px system-ui', '#042316', 'center');
+
+      const bodyY = y + topH + 16;
+      const bodyH = h - topH - 28;
+
+      if (mode === 'menu') {
+        // Hero de la marca ficticia ALBA & GRANO dentro de la pantalla
+        roundRect(x + 18, bodyY, w - 36, bodyH * 0.28, 18, '#f3e7d8', '#e2d0b9', 2);
+        drawTextBlock('ALBA & GRANO • CAFÉ & DESAYUNOS', x + 36, bodyY + 34, w - 72, 22, '800 16px system-ui', '#7c2d12', 'left');
+        drawTextBlock('Cada taza y cada bocado tienen su historia.', x + 36, bodyY + 72, w - 72, 34, '900 28px system-ui', '#1c1917', 'left');
+        drawTextBlock('Pide en segundos • Sin comisiones • Suma puntos', x + 36, bodyY + bodyH * 0.28 - 18, w - 72, 22, '600 17px system-ui', '#57534e', 'left');
+
+        // Ítems interactivos del menú que se van seleccionando
+        const items = [
+          { name: 'Combo Desayuno Alba', sub: 'Tigrillo + Café pasado', price: '$4.50', at: 4.8 },
+          { name: 'Corviche Crocante (2u)', sub: 'Con salsa de maní', price: '$3.20', at: 6.2 },
+          { name: 'Cold Brew & Empanada', sub: 'Ideal para media mañana', price: '$3.80', at: 7.6 }
+        ];
+
+        let total = 0;
+        let selectedCount = 0;
+        const listStartY = bodyY + bodyH * 0.31;
+        const itemH = Math.min(112, (bodyH * 0.46) / 3);
+
+        items.forEach((it, idx) => {
+          const iy = listStartY + idx * (itemH + 12);
+          const picked = sec >= it.at;
+          if (picked) {
+            total += parseFloat(it.price.replace('$', ''));
+            selectedCount++;
+          }
+
+          roundRect(x + 18, iy, w - 36, itemH, 16, picked ? '#ecfdf5' : '#ffffff', picked ? '#10b981' : '#e5d8c8', 2.5);
+          drawTextBlock(it.name, x + 34, iy + 36, w * 0.62, 26, '800 21px system-ui', '#1c1917', 'left');
+          drawTextBlock(it.sub, x + 34, iy + 64, w * 0.62, 22, '500 17px system-ui', '#78716c', 'left');
+          drawTextBlock(it.price, x + 34, iy + itemH - 14, 180, 24, '900 21px system-ui', '#047857', 'left');
+
+          roundRect(x + w - 155, iy + itemH * 0.26, 118, itemH * 0.48, 12, picked ? '#10b981' : '#2c1810');
+          drawTextBlock(picked ? '✓ Listo' : '+ Pedir', x + w - 96, iy + itemH * 0.56, 108, 22, '800 18px system-ui', picked ? '#042316' : '#ffffff', 'center');
+        });
+
+        // Barra inferior de pedido por WhatsApp dentro de la app
+        const barY = y + h - 86;
+        roundRect(x + 18, barY, w - 36, 68, 16, selectedCount > 0 ? '#15803d' : '#2c1810');
+        drawTextBlock(
+          `WhatsApp (${selectedCount}) • $${total.toFixed(2)}`,
+          x + 34, barY + 42, w * 0.62, 24, '800 20px system-ui', '#ffffff', 'left'
+        );
+        drawTextBlock('Enviar →', x + w - 115, barY + 42, 95, 24, '900 20px system-ui', '#dcfce7', 'center');
+      } else {
+        // Vista de Fidelización dentro de la pantalla de la app
+        const visits = Math.min(5, Math.floor((sec - 10.5) * 1.2) + 1);
+        roundRect(x + 18, bodyY, w - 36, bodyH * 0.55, 20, '#2c1810');
+        drawTextBlock('CLUB DE CLIENTES FRECUENTES', x + 36, bodyY + 38, w - 72, 24, '800 17px system-ui', '#fbbf24', 'left');
+        drawTextBlock('ALBA & GRANO REWARDS', x + 36, bodyY + 74, w - 72, 32, '900 26px system-ui', '#ffffff', 'left');
+        drawTextBlock(
+          visits === 5 ? '¡5/5 SELLOS! Café + Empanada GRATIS' : `Progreso del cliente: ${visits} de 5 visitas`,
+          x + 36, bodyY + 114, w - 72, 26, '700 20px system-ui', '#34d399', 'left'
+        );
+
+        const starY = bodyY + bodyH * 0.38;
+        const gap = (w - 96) / 4;
+        for (let i = 0; i < 5; i++) {
+          const sx = x + 48 + i * gap;
+          const active = i < visits;
+          ctx.beginPath();
+          ctx.arc(sx, starY, 26, 0, Math.PI * 2);
+          ctx.fillStyle = active ? '#f59e0b' : '#44271b';
+          ctx.fill();
+          drawTextBlock(active ? '★' : `${i + 1}`, sx, starY + 8, 40, 24, '900 20px system-ui', active ? '#2c1810' : '#d6d3d1', 'center');
+        }
+
+        const rewardY = bodyY + bodyH * 0.6;
+        roundRect(x + 18, rewardY, w - 36, bodyH * 0.36, 20, '#ffffff', '#e5d8c8', 2);
+        drawTextBlock('FIDELIZACIÓN SIN PAPEL', x + 36, rewardY + 38, w - 72, 24, '800 17px system-ui', '#7c2d12', 'left');
+        drawTextBlock('Clientes que vuelven solos a tu local', x + 36, rewardY + 74, w - 72, 32, '900 25px system-ui', '#1c1917', 'left');
+        drawTextBlock('Puntos, premios y recompra automática.', x + 36, rewardY + 112, w - 72, 24, '500 18px system-ui', '#57534e', 'left');
+      }
+
+      ctx.restore();
+    }
+
+    // Robot en movimiento sosteniendo una TABLET con la app funcionando (inspirado en imagen 1, sin marca de agua)
+    function drawRobotHoldingTablet(cx, cy, sec, scale = 1, appMode = 'menu') {
+      const floatY = Math.sin(sec * 3.6) * 14;
+      const tilt = Math.sin(sec * 2.1) * 0.035;
+      const blink = (sec % 3.2) > 3.02;
+      const lookX = Math.sin(sec * 2.4) * 5;
 
       ctx.save();
       ctx.translate(cx, cy + floatY);
       ctx.rotate(tilt);
       ctx.scale(scale, scale);
 
-      // Aura tecnológica inferior
-      const aura = ctx.createRadialGradient(0, 118, 8, 0, 118, 92);
-      aura.addColorStop(0, 'rgba(6, 182, 212, 0.42)');
-      aura.addColorStop(1, 'rgba(6, 182, 212, 0)');
-      ctx.fillStyle = aura;
+      // Aura inferior del robot
+      const floorGlow = ctx.createRadialGradient(0, 395, 10, 0, 395, 220);
+      floorGlow.addColorStop(0, 'rgba(6, 182, 212, 0.35)');
+      floorGlow.addColorStop(1, 'rgba(6, 182, 212, 0)');
+      ctx.fillStyle = floorGlow;
       ctx.beginPath();
-      ctx.ellipse(0, 118, 92, 22, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 395, 220, 36, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Antena con señal IA
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 7;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(0, -56 + nod);
-      ctx.lineTo(0, -94 + nod);
-      ctx.stroke();
+      // Piernas articuladas del robot
+      roundRect(-78, 175, 42, 130, 18, '#e2e8f0', '#94a3b8', 2.5);
+      roundRect(36, 175, 42, 130, 18, '#e2e8f0', '#94a3b8', 2.5);
+      // Articulaciones oscuras y botas
+      roundRect(-72, 295, 30, 48, 10, '#1e293b');
+      roundRect(42, 295, 30, 48, 10, '#1e293b');
+      roundRect(-94, 332, 74, 58, 22, '#f8fafc', '#94a3b8', 3);
+      roundRect(20, 332, 74, 58, 22, '#f8fafc', '#94a3b8', 3);
 
-      const tipPulse = 8.5 + Math.sin(sec * 10) * 2.5;
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath();
-      ctx.arc(0, -100 + nod, tipPulse, 0, Math.PI * 2);
-      ctx.fill();
+      // Torso blanco brillante con detalle cian de AbbaMend
+      const bodyGrad = ctx.createLinearGradient(-115, -15, 115, 185);
+      bodyGrad.addColorStop(0, '#ffffff');
+      bodyGrad.addColorStop(1, '#cbd5e1');
+      roundRect(-115, -15, 230, 200, 64, bodyGrad, '#94a3b8', 3);
 
-      // Brazo Izquierdo (señala hacia el contenido si pointDir === 'left')
-      ctx.save();
-      ctx.translate(-66, 24);
-      const leftAngle = pointDir === 'left'
-        ? 1.05 + Math.sin(sec * 7) * 0.14
-        : (pointDir === 'down' ? 0.25 + Math.sin(sec * 6) * 0.12 : -0.35 + Math.sin(sec * 6) * 0.25);
-      ctx.rotate(leftAngle);
-      roundRect(-12, 0, 24, 62, 12, '#0284c7', '#38bdf8', 2.5);
-      // Mano señalando
-      ctx.fillStyle = '#bae6fd';
-      ctx.beginPath();
-      ctx.arc(0, 66, 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      // Brazo Derecho (pulgar arriba / aprobación)
-      ctx.save();
-      ctx.translate(66, 24);
-      const rightAngle = pointDir === 'down'
-        ? -0.25 - Math.sin(sec * 6) * 0.12
-        : -0.75 - Math.sin(sec * 6.5) * 0.18;
-      ctx.rotate(rightAngle);
-      roundRect(-12, 0, 24, 62, 12, '#0284c7', '#38bdf8', 2.5);
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath();
-      ctx.arc(0, 66, 13, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      // Torso con emblema "A" de AbbaMend en el pecho
-      roundRect(-52, 12, 104, 82, 26, '#0f172a', '#22d3ee', 3.5);
-      roundRect(-26, 26, 52, 52, 14, '#06b6d422', '#38bdf8', 2);
-      drawTextBlock('A', 0, 64, 48, 40, '900 34px system-ui', '#22d3ee', 'center');
+      // Emblema en el pecho
+      roundRect(-42, 42, 84, 56, 18, '#0f172a', '#22d3ee', 2.5);
+      drawTextBlock('AM', 0, 79, 76, 30, '900 28px system-ui', '#22d3ee', 'center');
 
       // Cabeza del robot
-      const headGrad = ctx.createLinearGradient(-76, -58 + nod, 76, 16 + nod);
-      headGrad.addColorStop(0, '#0ea5e9');
-      headGrad.addColorStop(1, '#1d4ed8');
-      roundRect(-78, -58 + nod, 156, 78, 36, headGrad, '#bae6fd', 3);
+      const headGrad = ctx.createLinearGradient(-72, -235, 72, -65);
+      headGrad.addColorStop(0, '#ffffff');
+      headGrad.addColorStop(1, '#cbd5e1');
+      roundRect(-68, -235, 136, 155, 54, headGrad, '#94a3b8', 3);
 
-      // Visor digital
-      roundRect(-58, -42 + nod, 116, 46, 20, '#060a13', '#0f172a', 2);
-
-      // Ojos expresivos
-      if (isBlinking) {
+      // Visor oscuro con ojos cian brillantes
+      roundRect(-48, -195, 96, 62, 28, '#090d16', '#1e293b', 2);
+      if (blink) {
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 5;
         ctx.beginPath();
-        ctx.moveTo(-36 + eyeLookX, -19 + nod);
-        ctx.lineTo(-14 + eyeLookX, -19 + nod);
-        ctx.moveTo(14 + eyeLookX, -19 + nod);
-        ctx.lineTo(36 + eyeLookX, -19 + nod);
+        ctx.moveTo(-32 + lookX, -164);
+        ctx.lineTo(-10 + lookX, -164);
+        ctx.moveTo(10 + lookX, -164);
+        ctx.lineTo(32 + lookX, -164);
         ctx.stroke();
       } else {
         ctx.fillStyle = '#22d3ee';
         ctx.beginPath();
-        ctx.arc(-25 + eyeLookX, -19 + nod + eyeLookY, 10.5, 0, Math.PI * 2);
-        ctx.arc(25 + eyeLookX, -19 + nod + eyeLookY, 10.5, 0, Math.PI * 2);
+        ctx.arc(-21 + lookX, -164, 13, 0, Math.PI * 2);
+        ctx.arc(21 + lookX, -164, 13, 0, Math.PI * 2);
         ctx.fill();
-
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(-22 + eyeLookX, -22 + nod + eyeLookY, 3.5, 0, Math.PI * 2);
-        ctx.arc(28 + eyeLookX, -22 + nod + eyeLookY, 3.5, 0, Math.PI * 2);
+        ctx.arc(-18 + lookX, -168, 4.5, 0, Math.PI * 2);
+        ctx.arc(24 + lookX, -168, 4.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Insignia flotante de aprobación ("✓ Correcto") al lado del robot
-      if (badgeText) {
-        const badgeScale = 1 + Math.sin(sec * 8) * 0.06;
-        ctx.save();
-        ctx.translate(-88, -76);
-        ctx.scale(badgeScale, badgeScale);
-        roundRect(-42, -22, 84, 44, 22, '#10b981', '#ecfdf5', 2.5);
-        drawTextBlock(badgeText, 0, 9, 76, 28, '900 22px system-ui', '#042316', 'center');
-        ctx.restore();
+      // Brazo izquierdo señalando aprobación ("✓")
+      const wave = Math.sin(sec * 6.5) * 0.22;
+      ctx.save();
+      ctx.translate(-122, 25);
+      ctx.rotate(-0.65 + wave);
+      roundRect(-18, 0, 34, 95, 16, '#f8fafc', '#94a3b8', 2.5);
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(0, 102, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // TABLET sostenida al frente / derecha donde corre la app
+      const tabX = -225;
+      const tabY = -215;
+      const tabW = 540;
+      const tabH = 740;
+
+      // Marco de la tablet
+      roundRect(tabX, tabY, tabW, tabH, 42, '#0f172a', '#38bdf8', 5);
+      // Cámara frontal y botón home sutil
+      ctx.fillStyle = '#475569';
+      ctx.beginPath();
+      ctx.arc(tabX + tabW / 2, tabY + 22, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pantalla interior activa de la app
+      drawInsideAppScreen(tabX + 22, tabY + 44, tabW - 44, tabH - 84, sec, appMode);
+
+      // Mano mecánica del robot sujetando el borde derecho de la tablet
+      roundRect(tabX + tabW - 14, tabY + 220, 44, 140, 18, '#f1f5f9', '#94a3b8', 3);
+      for (let f = 0; f < 3; f++) {
+        roundRect(tabX + tabW - 22, tabY + 240 + f * 38, 22, 18, 8, '#0284c7');
       }
 
       ctx.restore();
     }
 
-    function drawTopBar(sec) {
+    function drawTopHeader(sec) {
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(0, 0, 1080, 10);
-      const progGrad = ctx.createLinearGradient(0, 0, 1080, 0);
-      progGrad.addColorStop(0, '#06b6d4');
-      progGrad.addColorStop(1, '#10b981');
-      ctx.fillStyle = progGrad;
+      const grad = ctx.createLinearGradient(0, 0, 1080, 0);
+      grad.addColorStop(0, '#06b6d4');
+      grad.addColorStop(1, '#10b981');
+      ctx.fillStyle = grad;
       ctx.fillRect(0, 0, (Math.min(sec * 1000, DURATION) / DURATION) * 1080, 10);
 
-      roundRect(48, 30, 984, 114, 57, '#0f172a', '#1e293b', 2);
-      drawRealLogoBox(108, 87, 74, 74, '#ffffff');
+      roundRect(48, 28, 984, 112, 56, '#0f172a', '#1e293b', 2);
+      drawLogoFitted(106, 84, 72, 72, '#ffffff');
 
-      drawTextBlock('AbbaMend', 162, 80, 520, 34, '800 30px system-ui', '#f8fafc', 'left');
-      drawTextBlock('Apps • Fidelización • Automatización IA', 162, 112, 520, 26, '500 21px system-ui', '#38bdf8', 'left');
+      drawTextBlock('AbbaMend', 158, 77, 540, 32, '800 29px system-ui', '#ffffff', 'left');
+      drawTextBlock('App Menú Digital • Fidelización • Software a Medida', 158, 109, 560, 24, '500 20px system-ui', '#38bdf8', 'left');
 
-      roundRect(735, 54, 265, 66, 33, '#06b6d4');
-      drawTextBlock('Demo en Vivo', 867, 95, 235, 30, '800 24px system-ui', '#04131a', 'center');
+      roundRect(755, 52, 245, 64, 32, '#06b6d4');
+      drawTextBlock('Demo en Vivo', 877, 92, 220, 28, '800 23px system-ui', '#04131a', 'center');
     }
 
     function renderFrame(elapsed) {
       const t = Math.min(elapsed, DURATION);
       const sec = t / 1000;
 
-      // Mostrar botón real de WhatsApp solo en la escena de cierre (21s a 25s)
+      // Botón clicable de WhatsApp visible en el cierre (21s a 25s)
       waBtn.style.display = sec >= 21 ? 'flex' : 'none';
 
       const bg = ctx.createLinearGradient(0, 0, 0, 1920);
-      bg.addColorStop(0, '#060a13');
-      bg.addColorStop(0.55, '#0b1222');
-      bg.addColorStop(1, '#070b14');
+      bg.addColorStop(0, '#050911');
+      bg.addColorStop(0.5, '#0b1324');
+      bg.addColorStop(1, '#060a13');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, 1080, 1920);
 
-      drawTopBar(sec);
+      drawTopHeader(sec);
 
-      // ==================================================
-      // ESCENA 1 (0s - 4s): Hero Marca Ficticia + Robot AbbaMend aprobando
-      // ==================================================
-      if (sec < 4) {
-        roundRect(64, 180, 952, 1110, 44, '#0f172a', '#1e293b', 2);
-
-        roundRect(104, 224, 650, 56, 28, '#06b6d41c', '#06b6d466', 2);
-        drawTextBlock('KINETIX • SNEAKERS, STREETWEAR & DROPS', 429, 260, 610, 28, '800 21px system-ui', '#22d3ee', 'center');
-
-        // Robot AbbaMend en el espacio superior derecho aprobando
-        drawAbbaMendRobot(895, 315, sec, 0.88, 'left', '✓ TOP');
-
-        drawTextBlock('Cada paso marca tu propio estilo.', 104, 385, 680, 84, '900 72px system-ui', '#ffffff', 'left');
+      // Titular superior claro sobre la app en pantalla
+      if (sec < 10.5) {
         drawTextBlock(
-          'Catálogo interactivo, club de clientes frecuentes y pedido directo por WhatsApp sin perder ventas.',
-          104, 595, 860, 46, '500 33px system-ui', '#cbd5e1', 'left'
+          'Mira cómo funciona la app en pantalla',
+          540, 205, 960, 56, '900 46px system-ui', '#ffffff', 'center'
+        );
+        drawTextBlock(
+          'Menú digital interactivo + pedido directo a WhatsApp (marca demo: Alba & Grano)',
+          540, 260, 960, 36, '600 27px system-ui', '#22d3ee', 'center'
         );
 
-        const cardGrad = ctx.createLinearGradient(104, 755, 976, 1105);
-        cardGrad.addColorStop(0, '#0284c7');
-        cardGrad.addColorStop(1, '#06b6d4');
-        roundRect(104, 755, 872, 350, 34, cardGrad);
-        drawTextBlock('KINETIX', 540, 905, 800, 92, '900 88px system-ui', '#ffffff', 'center');
-        drawTextBlock('URBAN FOOTWEAR & DROPS • DEMO INTERACTIVA', 540, 975, 800, 36, '800 25px system-ui', '#e0f2fe', 'center');
-        drawTextBlock('Catálogo ágil • Puntos por visita • Reserva en WhatsApp', 540, 1030, 800, 34, '600 25px system-ui', '#f0f9ff', 'center');
-
-        roundRect(104, 1150, 370, 82, 22, '#f59e0b');
-        drawTextBlock('Ver catálogo  >', 289, 1200, 330, 32, '800 27px system-ui', '#1e1300', 'center');
-
-        roundRect(498, 1150, 478, 82, 22, '#1e293b', '#334155', 2);
-        drawTextBlock('Tienda & Drops • Respuesta rápida', 737, 1200, 440, 32, '600 24px system-ui', '#e2e8f0', 'center');
+        // Robot moviéndose y sosteniendo la pantalla con el menú digital en vivo
+        drawRobotHoldingTablet(575, 760, sec, 1.05, 'menu');
 
         drawTextBlock(
           'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1420, 920, 68, '800 54px system-ui', '#ffffff', 'center'
+          540, 1480, 940, 62, '800 48px system-ui', '#ffffff', 'center'
         );
         drawTextBlock(
-          'Menú o catálogo digital + recompensas en un mismo flujo',
-          540, 1615, 900, 44, '600 33px system-ui', '#fbbf24', 'center'
+          'Sin comisiones por pedido • Actualiza precios y platos al instante',
+          540, 1635, 920, 42, '600 31px system-ui', '#fbbf24', 'center'
         );
       }
-
-      // ==================================================
-      // ESCENA 2 (4s - 10.5s): Catálogo / Menú + Robot señalando el flujo
-      // ==================================================
-      else if (sec < 10.5) {
-        const localT = sec - 4;
-        drawTextBlock('CATÁLOGO / MENÚ INTERACTIVO • KINETIX', 64, 205, 730, 32, '800 25px system-ui', '#22d3ee', 'left');
-        drawTextBlock('Eligen, suman y piden directo a tu WhatsApp.', 64, 272, 740, 62, '900 50px system-ui', '#ffffff', 'left');
-
-        // Robot AbbaMend arriba a la derecha señalando los productos
-        drawAbbaMendRobot(910, 285, sec, 0.85, 'left', '✓ 0% COM.');
-
-        const products = [
-          { tag: 'DROP 01', name: 'Runner Retro 98 Cream', sub: 'Tallas 38–43 • Stock listo', price: '$68.00', at: 0.7 },
-          { tag: 'EDICIÓN', name: 'Court Low Obsidian', sub: 'Estilo urbano • Alta rotación', price: '$59.00', at: 2.0 },
-          { tag: 'ACCESORIO', name: 'Pack 3 Medias Pro Crew', sub: 'Ideal para elevar ticket', price: '$14.00', at: 3.3 }
-        ];
-
-        let total = 0;
-        let itemsCount = 0;
-
-        products.forEach((p, idx) => {
-          const y = 415 + idx * 295;
-          const active = localT >= p.at;
-          if (active) {
-            total += parseFloat(p.price.replace('$', ''));
-            itemsCount++;
-          }
-
-          roundRect(64, y, 952, 265, 34, active ? '#0c2438' : '#0f172a', active ? '#22d3ee' : '#1e293b', active ? 3.5 : 2);
-
-          drawTextBlock(p.tag, 102, y + 50, 600, 28, '800 22px system-ui', '#fbbf24', 'left');
-          drawTextBlock(p.name, 102, y + 100, 610, 42, '800 36px system-ui', '#ffffff', 'left');
-          drawTextBlock(p.sub, 102, y + 144, 610, 32, '500 25px system-ui', '#94a3b8', 'left');
-          drawTextBlock(p.price, 102, y + 220, 560, 40, '900 36px system-ui', '#34d399', 'left');
-
-          roundRect(732, y + 170, 244, 66, 20, active ? '#10b981' : '#1e293b', active ? '#10b981' : '#334155', 2);
-          drawTextBlock(active ? '✓ Agregado' : '+ Elegir', 854, y + 212, 220, 30, '800 25px system-ui', active ? '#042316' : '#f8fafc', 'center');
-        });
-
-        const ready = localT >= 4.3;
-        roundRect(64, 1335, 952, 160, 36, ready ? '#10b981' : '#0f172a', ready ? '#34d399' : '#334155', 3);
+      // 10.5s - 17s: Fidelización dentro de la pantalla que sostiene el robot
+      else if (sec < 17) {
         drawTextBlock(
-          `Reserva rápida por WhatsApp (${itemsCount} ítems)`,
-          102, 1400, 880, 38, '800 31px system-ui', ready ? '#042316' : '#ffffff', 'left'
+          'Fidelización activa dentro de la app',
+          540, 205, 960, 56, '900 46px system-ui', '#ffffff', 'center'
         );
         drawTextBlock(
-          `Pedido armado en vivo • Total: $${total.toFixed(2)}`,
-          102, 1452, 880, 34, '700 26px system-ui', ready ? '#064e3b' : '#94a3b8', 'left'
+          'El robot muestra cómo el cliente suma visitas y desbloquea premios',
+          540, 260, 960, 36, '600 27px system-ui', '#fbbf24', 'center'
         );
+
+        drawRobotHoldingTablet(575, 760, sec, 1.05, 'loyalty');
 
         drawTextBlock(
           'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1585, 920, 46, '800 34px system-ui', '#fbbf24', 'center'
+          540, 1480, 940, 62, '800 48px system-ui', '#ffffff', 'center'
+        );
+        drawTextBlock(
+          'Convierte compras ocasionales en clientes recurrentes',
+          540, 1635, 920, 42, '600 31px system-ui', '#34d399', 'center'
         );
       }
-
-      // ==================================================
-      // ESCENA 3 (10.5s - 16.5s): Club de Clientes Frecuentes + Robot señalando
-      // ==================================================
-      else if (sec < 16.5) {
-        const localT = sec - 10.5;
-        const visits = Math.min(5, Math.floor(localT * 1.2) + 1);
-
-        const vipGrad = ctx.createLinearGradient(64, 195, 1016, 755);
-        vipGrad.addColorStop(0, '#0f172a');
-        vipGrad.addColorStop(1, '#13263f');
-        roundRect(64, 195, 952, 560, 42, vipGrad, '#06b6d4', 3);
-
-        drawTextBlock('BENEFICIOS PARA TI', 104, 262, 540, 30, '800 23px system-ui', '#22d3ee', 'left');
-
-        roundRect(665, 226, 310, 62, 31, '#f59e0b');
-        drawTextBlock(
-          visits === 5 ? 'NIVEL VIP • PREMIO' : `CLIENTE • ${visits}/5 VISITAS`,
-          820, 266, 280, 28, '900 21px system-ui', '#1e1300', 'center'
-        );
-
-        drawTextBlock('Club de Clientes Frecuentes', 104, 342, 680, 54, '900 45px system-ui', '#ffffff', 'left');
-        drawTextBlock('• KINETIX', 104, 444, 650, 40, '800 32px system-ui', '#fbbf24', 'left');
-
-        // Robot AbbaMend dentro del espacio derecho de la tarjeta VIP aprobando la fidelización
-        drawAbbaMendRobot(890, 415, sec, 0.78, 'left', '✓ VIP');
-
-        for (let i = 0; i < 5; i++) {
-          const cx = 176 + i * 182;
-          const cy = 608;
-          const earned = i < visits;
-
-          ctx.beginPath();
-          ctx.arc(cx, cy, 58, 0, Math.PI * 2);
-          ctx.fillStyle = earned ? '#f59e0b' : '#090e1a';
-          ctx.fill();
-          ctx.lineWidth = 3;
-          ctx.strokeStyle = earned ? '#fde68a' : '#334155';
-          ctx.stroke();
-
-          drawTextBlock(earned ? '★' : `#${i + 1}`, cx, cy + 16, 90, 40, '900 38px system-ui', earned ? '#1e1300' : '#94a3b8', 'center');
-        }
-
-        roundRect(64, 795, 952, 470, 42, '#0f172a', '#1e293b', 2);
-        drawTextBlock('FIDELIZACIÓN DIGITAL ACTIVA', 104, 862, 870, 32, '800 24px system-ui', '#fbbf24', 'left');
-        drawTextBlock(
-          visits === 5 ? '¡Beneficio VIP desbloqueado! 15% OFF en tu próximo pedido' : 'Suma visitas y desbloquea beneficios exclusivos.',
-          104, 926, 870, 56, '900 44px system-ui', '#ffffff', 'left'
-        );
-        drawTextBlock(
-          'Historial de visitas, puntos o sellos sin tarjetas de papel y listo para aumentar la recurrencia.',
-          104, 1065, 870, 40, '500 29px system-ui', '#cbd5e1', 'left'
-        );
-
-        roundRect(104, 1164, 420, 64, 20, '#10b98122', '#10b98166', 2);
-        drawTextBlock('✓ Sin tarjetas físicas', 314, 1204, 380, 30, '700 24px system-ui', '#34d399', 'center');
-
-        roundRect(556, 1164, 420, 64, 20, '#f59e0b22', '#f59e0b66', 2);
-        drawTextBlock('✓ Clientes que vuelven', 766, 1204, 380, 30, '700 24px system-ui', '#fbbf24', 'center');
-
-        drawTextBlock(
-          'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1410, 920, 64, '800 50px system-ui', '#ffffff', 'center'
-        );
-      }
-
-      // ==================================================
-      // ESCENA 4 (16.5s - 21s): Ecosistema Completo + Robot AbbaMend
-      // ==================================================
-      else if (sec < 21) {
-        drawTextBlock('ECOSISTEMA COMPLETO • ABBAMEND', 64, 205, 720, 32, '800 25px system-ui', '#22d3ee', 'left');
-        drawTextBlock('Automatización y software a medida.', 64, 272, 730, 62, '900 50px system-ui', '#ffffff', 'left');
-
-        drawAbbaMendRobot(895, 295, sec, 0.98, 'left', '✓ IA 24/7');
-
-        const capabilities = [
-          { num: '01', accent: '#22d3ee', title: 'Automatización & Flujos IA', desc: 'Atención automatizada, captura de leads y procesos conectados 24/7.' },
-          { num: '02', accent: '#f59e0b', title: 'Web Apps & Micro-SaaS', desc: 'Catálogos, menús digitales, clubes de clientes y paneles en la nube.' },
-          { num: '03', accent: '#10b981', title: 'Sistemas a Medida', desc: 'Arquitecturas y bases de datos adaptadas a la operación de tu empresa.' }
-        ];
-
-        capabilities.forEach((cap, idx) => {
-          const y = 445 + idx * 315;
-          roundRect(64, y, 952, 274, 34, '#0f172a', '#1e293b', 2);
-
-          roundRect(102, y + 46, 86, 86, 24, cap.accent);
-          drawTextBlock(cap.num, 145, y + 102, 80, 40, '900 34px system-ui', '#04131a', 'center');
-
-          drawTextBlock(cap.title, 218, y + 94, 760, 44, '800 36px system-ui', '#ffffff', 'left');
-          drawTextBlock(cap.desc, 218, y + 150, 760, 40, '500 29px system-ui', '#cbd5e1', 'left');
-        });
-
-        drawTextBlock(
-          'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1495, 920, 56, '800 42px system-ui', '#22d3ee', 'center'
-        );
-      }
-
-      // ==================================================
-      // ESCENA 5 (21s - 25s): Cierre con Logo Real + Robot señalando el botón
-      // ==================================================
+      // 17s - 25s: Ecosistema AbbaMend + Cierre con Logo + Robot + CTA WhatsApp
       else {
-        roundRect(64, 210, 952, 1410, 48, '#0f172a', '#22d3ee66', 3);
-
-        drawRealLogoBox(435, 455, 360, 270, '#ffffff');
-        drawAbbaMendRobot(815, 465, sec, 1.08, 'down', '✓ AQUÍ');
-
-        drawTextBlock('AbbaMend Full-Stack AI Builder', 540, 685, 860, 60, '900 48px system-ui', '#ffffff', 'center');
         drawTextBlock(
-          'Catálogos & Menús • Fidelización • Automatización • Software a Medida',
-          540, 765, 840, 42, '600 29px system-ui', '#38bdf8', 'center'
+          'Automatización, apps y software a medida',
+          540, 205, 960, 56, '900 44px system-ui', '#ffffff', 'center'
+        );
+        drawTextBlock(
+          'Con el respaldo de AbbaMend Full-Stack AI Builder',
+          540, 258, 960, 36, '700 28px system-ui', '#22d3ee', 'center'
         );
 
-        roundRect(114, 885, 852, 205, 32, '#13263f', '#1e293b', 2);
+        drawLogoFitted(540, 395, 360, 180, '#ffffff');
+        drawRobotHoldingTablet(575, 845, sec, 0.92, 'menu');
+
         drawTextBlock(
           'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 955, 800, 46, '800 35px system-ui', '#ffffff', 'center'
+          540, 1450, 940, 56, '800 42px system-ui', '#ffffff', 'center'
         );
-        drawTextBlock(
-          'Escríbenos y armamos una demo adaptada a tu rubro',
-          540, 1045, 800, 38, '500 28px system-ui', '#cbd5e1', 'center'
-        );
-
-        // Respaldo visual en canvas (el enlace clicable real está en #waCtaOverlay)
-        const pulse = 1 + Math.sin(sec * 10) * 0.025;
-        ctx.save();
-        ctx.translate(540, 1380);
-        ctx.scale(pulse, pulse);
-        roundRect(-375, -68, 750, 136, 68, '#10b981');
-        drawTextBlock('Solicitar Demo por WhatsApp  →', 0, 14, 710, 38, '900 35px system-ui', '#042316', 'center');
-        ctx.restore();
       }
     }
 
@@ -623,9 +526,9 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-25s.webm';
+        a.download = 'abbamend-robot-app-menu-25s.webm';
         a.click();
-        statusEl.textContent = '¡Video descargado! Listo para subir a Supabase Storage o redes.';
+        statusEl.textContent = '¡Video descargado! Listo para convertir a .mp4 o publicar.';
       };
 
       statusEl.textContent = 'Grabando 25 segundos en tiempo real... No cierres la pestaña.';
@@ -633,8 +536,8 @@
       playAnimation(() => recorder.stop());
     };
 
-    // Inicia en el segundo 12 para previsualizar el robot en acción con el club VIP
-    renderFrame(12000);
+    // Inicia en el segundo 6 para ver al robot sosteniendo la pantalla con el menú activo
+    renderFrame(6000);
   </script>
 </body>
 </html>
