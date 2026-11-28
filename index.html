@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo — Robot con Pantalla App Menú Digital</title>
+  <title>AbbaMend Promo — Robot Interactuando con App en Pantalla</title>
   <style>
     body {
       margin: 0;
@@ -100,7 +100,7 @@
     // CONFIGURA AQUÍ TU NÚMERO DE WHATSAPP (ej. Ecuador: '5939XXXXXXXX')
     // =========================================================================
     const WHATSAPP_PHONE = 'TU_NUMERO_WHATSAPP';
-    const WHATSAPP_MESSAGE = 'Hola AbbaMend, vi el robot con la app de menú digital y quiero solicitar una demo.';
+    const WHATSAPP_MESSAGE = 'Hola AbbaMend, vi el robot interactuando con la app y quiero solicitar una demo.';
     const WHATSAPP_URL = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
     const waBtn = document.getElementById('waCtaOverlay');
@@ -121,7 +121,7 @@
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend1.png listo. Robot sosteniendo la app en pantalla.';
+      statusEl.textContent = 'Logo logoAbbaMend1.png cargado. Robot interactuando en pantalla.';
       renderFrame(performance.now() - (startTime || performance.now()));
     };
 
@@ -182,57 +182,62 @@
       ctx.drawImage(abbaLogo, cx - w / 2, cy - h / 2, w, h);
     }
 
-    // Dibuja la APP de Menú Digital + Fidelización (marca ficticia ALBA & GRANO) dentro de un área (x, y, w, h)
-    function drawInsideAppScreen(x, y, w, h, sec, mode = 'menu') {
+    // App interactiva de ALBA & GRANO dentro de la pantalla
+    function drawAppScreen(x, y, w, h, sec, mode = 'menu') {
       ctx.save();
+      // Marco exterior de pantalla / monitor táctil
+      roundRect(x - 14, y - 14, w + 28, h + 28, 34, '#0f172a', '#38bdf8', 4);
       roundRect(x, y, w, h, 24, '#faf5ef');
       ctx.clip();
 
-      // Barra superior de la app (estilo cálido editorial con marca ficticia ALBA & GRANO)
-      const topH = Math.round(h * 0.12);
+      const topH = Math.round(h * 0.13);
       roundRect(x, y, w, topH, 0, '#2c1810');
 
-      const badgeR = Math.min(26, Math.round(topH * 0.34));
+      const rBadge = Math.min(28, Math.round(topH * 0.34));
       ctx.beginPath();
-      ctx.arc(x + 42, y + topH / 2, badgeR, 0, Math.PI * 2);
+      ctx.arc(x + 44, y + topH / 2, rBadge, 0, Math.PI * 2);
       ctx.fillStyle = '#f59e0b';
       ctx.fill();
-      drawTextBlock('AG', x + 42, y + topH / 2 + 8, badgeR * 1.8, 24, '900 20px system-ui', '#2c1810', 'center');
+      drawTextBlock('AG', x + 44, y + topH / 2 + 8, rBadge * 1.8, 24, '900 20px system-ui', '#2c1810', 'center');
 
-      drawTextBlock('ALBA & GRANO', x + 80, y + topH / 2 - 2, w * 0.52, 26, '900 24px system-ui', '#ffffff', 'left');
-      drawTextBlock('Menú Digital & Club', x + 80, y + topH / 2 + 22, w * 0.52, 20, '500 16px system-ui', '#fde68a', 'left');
+      drawTextBlock('ALBA & GRANO', x + 84, y + topH / 2 - 2, w * 0.5, 28, '900 25px system-ui', '#ffffff', 'left');
+      drawTextBlock('Menú Digital & Fidelización', x + 84, y + topH / 2 + 24, w * 0.5, 20, '500 17px system-ui', '#fde68a', 'left');
 
-      roundRect(x + w - 165, y + topH * 0.22, 142, topH * 0.56, 14, '#10b981');
-      drawTextBlock(mode === 'menu' ? '● Carta' : '★ Club', x + w - 94, y + topH / 2 + 7, 130, 22, '800 18px system-ui', '#042316', 'center');
+      roundRect(x + w - 170, y + topH * 0.22, 146, topH * 0.56, 14, '#10b981');
+      drawTextBlock(mode === 'menu' ? '● En vivo' : '★ VIP Club', x + w - 97, y + topH / 2 + 7, 134, 22, '800 18px system-ui', '#042316', 'center');
 
       const bodyY = y + topH + 16;
       const bodyH = h - topH - 28;
 
       if (mode === 'menu') {
-        // Hero de la marca ficticia ALBA & GRANO dentro de la pantalla
-        roundRect(x + 18, bodyY, w - 36, bodyH * 0.28, 18, '#f3e7d8', '#e2d0b9', 2);
-        drawTextBlock('ALBA & GRANO • CAFÉ & DESAYUNOS', x + 36, bodyY + 34, w - 72, 22, '800 16px system-ui', '#7c2d12', 'left');
-        drawTextBlock('Cada taza y cada bocado tienen su historia.', x + 36, bodyY + 72, w - 72, 34, '900 28px system-ui', '#1c1917', 'left');
-        drawTextBlock('Pide en segundos • Sin comisiones • Suma puntos', x + 36, bodyY + bodyH * 0.28 - 18, w - 72, 22, '600 17px system-ui', '#57534e', 'left');
+        roundRect(x + 18, bodyY, w - 36, bodyH * 0.24, 18, '#f3e7d8', '#e2d0b9', 2);
+        drawTextBlock('ALBA & GRANO • MARCA DEMO', x + 36, bodyY + 32, w - 72, 22, '800 16px system-ui', '#7c2d12', 'left');
+        drawTextBlock('Toca y arma tu pedido al instante', x + 36, bodyY + 68, w - 72, 32, '900 26px system-ui', '#1c1917', 'left');
+        drawTextBlock('Sin comisiones • Directo a WhatsApp', x + 36, bodyY + bodyH * 0.24 - 16, w - 72, 22, '600 17px system-ui', '#57534e', 'left');
 
-        // Ítems interactivos del menú que se van seleccionando
         const items = [
-          { name: 'Combo Desayuno Alba', sub: 'Tigrillo + Café pasado', price: '$4.50', at: 4.8 },
-          { name: 'Corviche Crocante (2u)', sub: 'Con salsa de maní', price: '$3.20', at: 6.2 },
-          { name: 'Cold Brew & Empanada', sub: 'Ideal para media mañana', price: '$3.80', at: 7.6 }
+          { name: 'Combo Desayuno Alba', sub: 'Tigrillo + Café pasado', price: '$4.50', at: 1.0 },
+          { name: 'Corviche Crocante (2u)', sub: 'Con salsa de maní', price: '$3.20', at: 2.6 },
+          { name: 'Cold Brew & Empanada', sub: 'Ideal para media mañana', price: '$3.80', at: 4.2 }
         ];
 
+        const localT = sec % 6.5;
         let total = 0;
-        let selectedCount = 0;
-        const listStartY = bodyY + bodyH * 0.31;
-        const itemH = Math.min(112, (bodyH * 0.46) / 3);
+        let count = 0;
+        const listY = bodyY + bodyH * 0.27;
+        const itemH = Math.min(118, (bodyH * 0.48) / 3);
+
+        let activeTapY = null;
 
         items.forEach((it, idx) => {
-          const iy = listStartY + idx * (itemH + 12);
-          const picked = sec >= it.at;
+          const iy = listY + idx * (itemH + 12);
+          const picked = localT >= it.at;
+          const justTapped = localT >= it.at && localT < it.at + 0.65;
+          if (justTapped) activeTapY = iy + itemH * 0.52;
+
           if (picked) {
             total += parseFloat(it.price.replace('$', ''));
-            selectedCount++;
+            count++;
           }
 
           roundRect(x + 18, iy, w - 36, itemH, 16, picked ? '#ecfdf5' : '#ffffff', picked ? '#10b981' : '#e5d8c8', 2.5);
@@ -240,26 +245,34 @@
           drawTextBlock(it.sub, x + 34, iy + 64, w * 0.62, 22, '500 17px system-ui', '#78716c', 'left');
           drawTextBlock(it.price, x + 34, iy + itemH - 14, 180, 24, '900 21px system-ui', '#047857', 'left');
 
-          roundRect(x + w - 155, iy + itemH * 0.26, 118, itemH * 0.48, 12, picked ? '#10b981' : '#2c1810');
-          drawTextBlock(picked ? '✓ Listo' : '+ Pedir', x + w - 96, iy + itemH * 0.56, 108, 22, '800 18px system-ui', picked ? '#042316' : '#ffffff', 'center');
+          roundRect(x + w - 156, iy + itemH * 0.26, 120, itemH * 0.48, 12, picked ? '#10b981' : '#2c1810');
+          drawTextBlock(picked ? '✓ Elegido' : '+ Pedir', x + w - 96, iy + itemH * 0.56, 110, 22, '800 18px system-ui', picked ? '#042316' : '#ffffff', 'center');
         });
 
-        // Barra inferior de pedido por WhatsApp dentro de la app
+        // Onda de toque táctil cuando el robot interactúa con un ítem
+        if (activeTapY !== null) {
+          const rippleR = 16 + ((localT % 0.65) / 0.65) * 28;
+          ctx.strokeStyle = 'rgba(6, 182, 212, 0.85)';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(x + w - 96, activeTapY, rippleR, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
         const barY = y + h - 86;
-        roundRect(x + 18, barY, w - 36, 68, 16, selectedCount > 0 ? '#15803d' : '#2c1810');
+        roundRect(x + 18, barY, w - 36, 68, 16, count > 0 ? '#15803d' : '#2c1810');
         drawTextBlock(
-          `WhatsApp (${selectedCount}) • $${total.toFixed(2)}`,
+          `WhatsApp (${count}) • $${total.toFixed(2)}`,
           x + 34, barY + 42, w * 0.62, 24, '800 20px system-ui', '#ffffff', 'left'
         );
         drawTextBlock('Enviar →', x + w - 115, barY + 42, 95, 24, '900 20px system-ui', '#dcfce7', 'center');
       } else {
-        // Vista de Fidelización dentro de la pantalla de la app
-        const visits = Math.min(5, Math.floor((sec - 10.5) * 1.2) + 1);
-        roundRect(x + 18, bodyY, w - 36, bodyH * 0.55, 20, '#2c1810');
+        const visits = Math.min(5, Math.floor((sec - 10.5) * 1.1) + 1);
+        roundRect(x + 18, bodyY, w - 36, bodyH * 0.54, 20, '#2c1810');
         drawTextBlock('CLUB DE CLIENTES FRECUENTES', x + 36, bodyY + 38, w - 72, 24, '800 17px system-ui', '#fbbf24', 'left');
         drawTextBlock('ALBA & GRANO REWARDS', x + 36, bodyY + 74, w - 72, 32, '900 26px system-ui', '#ffffff', 'left');
         drawTextBlock(
-          visits === 5 ? '¡5/5 SELLOS! Café + Empanada GRATIS' : `Progreso del cliente: ${visits} de 5 visitas`,
+          visits === 5 ? '¡5/5 SELLOS! Beneficio VIP desbloqueado' : `Visitas acumuladas: ${visits} de 5`,
           x + 36, bodyY + 114, w - 72, 26, '700 20px system-ui', '#34d399', 'left'
         );
 
@@ -275,121 +288,142 @@
           drawTextBlock(active ? '★' : `${i + 1}`, sx, starY + 8, 40, 24, '900 20px system-ui', active ? '#2c1810' : '#d6d3d1', 'center');
         }
 
-        const rewardY = bodyY + bodyH * 0.6;
-        roundRect(x + 18, rewardY, w - 36, bodyH * 0.36, 20, '#ffffff', '#e5d8c8', 2);
+        const rewardY = bodyY + bodyH * 0.59;
+        roundRect(x + 18, rewardY, w - 36, bodyH * 0.37, 20, '#ffffff', '#e5d8c8', 2);
         drawTextBlock('FIDELIZACIÓN SIN PAPEL', x + 36, rewardY + 38, w - 72, 24, '800 17px system-ui', '#7c2d12', 'left');
-        drawTextBlock('Clientes que vuelven solos a tu local', x + 36, rewardY + 74, w - 72, 32, '900 25px system-ui', '#1c1917', 'left');
-        drawTextBlock('Puntos, premios y recompra automática.', x + 36, rewardY + 112, w - 72, 24, '500 18px system-ui', '#57534e', 'left');
+        drawTextBlock('Clientes que vuelven solos', x + 36, rewardY + 74, w - 72, 32, '900 25px system-ui', '#1c1917', 'left');
+        drawTextBlock('Recompensas y recompra en automático.', x + 36, rewardY + 112, w - 72, 24, '500 18px system-ui', '#57534e', 'left');
       }
 
       ctx.restore();
     }
 
-    // Robot en movimiento sosteniendo una TABLET con la app funcionando (inspirado en imagen 1, sin marca de agua)
-    function drawRobotHoldingTablet(cx, cy, sec, scale = 1, appMode = 'menu') {
-      const floatY = Math.sin(sec * 3.6) * 14;
-      const tilt = Math.sin(sec * 2.1) * 0.035;
-      const blink = (sec % 3.2) > 3.02;
-      const lookX = Math.sin(sec * 2.4) * 5;
+    // Robot completo y visible moviéndose e interactuando con la pantalla a su lado
+    function drawActiveRobot(cx, cy, sec, scale = 1, targetScreenX = 680, targetScreenY = 760) {
+      const walkX = Math.sin(sec * 2.2) * 26;
+      const bounceY = Math.abs(Math.sin(sec * 4.4)) * -12;
+      const legSwing = Math.sin(sec * 4.4) * 0.32;
+      const headTurn = Math.sin(sec * 2.8) * 0.14;
+      const blink = (sec % 3.0) > 2.84;
+
+      const rx = cx + walkX;
+      const ry = cy + bounceY;
 
       ctx.save();
-      ctx.translate(cx, cy + floatY);
-      ctx.rotate(tilt);
+      ctx.translate(rx, ry);
       ctx.scale(scale, scale);
 
-      // Aura inferior del robot
-      const floorGlow = ctx.createRadialGradient(0, 395, 10, 0, 395, 220);
-      floorGlow.addColorStop(0, 'rgba(6, 182, 212, 0.35)');
-      floorGlow.addColorStop(1, 'rgba(6, 182, 212, 0)');
-      ctx.fillStyle = floorGlow;
+      // Sombra en el suelo que acompaña el paso del robot
+      const shadow = ctx.createRadialGradient(0, 235, 8, 0, 235, 130);
+      shadow.addColorStop(0, 'rgba(6, 182, 212, 0.45)');
+      shadow.addColorStop(1, 'rgba(6, 182, 212, 0)');
+      ctx.fillStyle = shadow;
       ctx.beginPath();
-      ctx.ellipse(0, 395, 220, 36, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 235, 130, 24, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Piernas articuladas del robot
-      roundRect(-78, 175, 42, 130, 18, '#e2e8f0', '#94a3b8', 2.5);
-      roundRect(36, 175, 42, 130, 18, '#e2e8f0', '#94a3b8', 2.5);
-      // Articulaciones oscuras y botas
-      roundRect(-72, 295, 30, 48, 10, '#1e293b');
-      roundRect(42, 295, 30, 48, 10, '#1e293b');
-      roundRect(-94, 332, 74, 58, 22, '#f8fafc', '#94a3b8', 3);
-      roundRect(20, 332, 74, 58, 22, '#f8fafc', '#94a3b8', 3);
+      // Pierna izquierda (animación de caminata)
+      ctx.save();
+      ctx.translate(-46, 105);
+      ctx.rotate(legSwing);
+      roundRect(-18, 0, 36, 95, 16, '#e2e8f0', '#94a3b8', 2.5);
+      roundRect(-24, 86, 54, 34, 14, '#0284c7');
+      ctx.restore();
 
-      // Torso blanco brillante con detalle cian de AbbaMend
-      const bodyGrad = ctx.createLinearGradient(-115, -15, 115, 185);
-      bodyGrad.addColorStop(0, '#ffffff');
-      bodyGrad.addColorStop(1, '#cbd5e1');
-      roundRect(-115, -15, 230, 200, 64, bodyGrad, '#94a3b8', 3);
+      // Pierna derecha (fase opuesta)
+      ctx.save();
+      ctx.translate(46, 105);
+      ctx.rotate(-legSwing);
+      roundRect(-18, 0, 36, 95, 16, '#e2e8f0', '#94a3b8', 2.5);
+      roundRect(-24, 86, 54, 34, 14, '#0284c7');
+      ctx.restore();
 
-      // Emblema en el pecho
-      roundRect(-42, 42, 84, 56, 18, '#0f172a', '#22d3ee', 2.5);
-      drawTextBlock('AM', 0, 79, 76, 30, '900 28px system-ui', '#22d3ee', 'center');
+      // Brazo izquierdo (aprobación / gesto animado)
+      ctx.save();
+      ctx.translate(-86, 12);
+      ctx.rotate(-0.55 + Math.sin(sec * 6) * 0.25);
+      roundRect(-14, 0, 28, 76, 14, '#f8fafc', '#94a3b8', 2.5);
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(0, 82, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
 
-      // Cabeza del robot
-      const headGrad = ctx.createLinearGradient(-72, -235, 72, -65);
+      // Torso del robot con emblema AbbaMend
+      const torsoGrad = ctx.createLinearGradient(-84, -15, 84, 120);
+      torsoGrad.addColorStop(0, '#ffffff');
+      torsoGrad.addColorStop(1, '#cbd5e1');
+      roundRect(-84, -15, 168, 132, 44, torsoGrad, '#94a3b8', 3);
+
+      roundRect(-36, 22, 72, 54, 16, '#0f172a', '#22d3ee', 2.5);
+      drawTextBlock('AM', 0, 58, 66, 28, '900 26px system-ui', '#22d3ee', 'center');
+
+      // Cabeza con giro e inclinación
+      ctx.save();
+      ctx.translate(0, -95);
+      ctx.rotate(headTurn);
+
+      // Antena con pulso
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(0, -56);
+      ctx.lineTo(0, -92);
+      ctx.stroke();
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(0, -98, 9 + Math.sin(sec * 9) * 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      const headGrad = ctx.createLinearGradient(-66, -62, 66, 36);
       headGrad.addColorStop(0, '#ffffff');
       headGrad.addColorStop(1, '#cbd5e1');
-      roundRect(-68, -235, 136, 155, 54, headGrad, '#94a3b8', 3);
+      roundRect(-66, -62, 132, 98, 42, headGrad, '#94a3b8', 3);
 
-      // Visor oscuro con ojos cian brillantes
-      roundRect(-48, -195, 96, 62, 28, '#090d16', '#1e293b', 2);
+      roundRect(-48, -36, 96, 46, 20, '#090d16');
       if (blink) {
         ctx.strokeStyle = '#22d3ee';
         ctx.lineWidth = 5;
         ctx.beginPath();
-        ctx.moveTo(-32 + lookX, -164);
-        ctx.lineTo(-10 + lookX, -164);
-        ctx.moveTo(10 + lookX, -164);
-        ctx.lineTo(32 + lookX, -164);
+        ctx.moveTo(-30, -13);
+        ctx.lineTo(-10, -13);
+        ctx.moveTo(10, -13);
+        ctx.lineTo(30, -13);
         ctx.stroke();
       } else {
         ctx.fillStyle = '#22d3ee';
         ctx.beginPath();
-        ctx.arc(-21 + lookX, -164, 13, 0, Math.PI * 2);
-        ctx.arc(21 + lookX, -164, 13, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(-18 + lookX, -168, 4.5, 0, Math.PI * 2);
-        ctx.arc(24 + lookX, -168, 4.5, 0, Math.PI * 2);
+        ctx.arc(-20, -13, 10, 0, Math.PI * 2);
+        ctx.arc(20, -13, 10, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
 
-      // Brazo izquierdo señalando aprobación ("✓")
-      const wave = Math.sin(sec * 6.5) * 0.22;
+      // Brazo derecho extendido interactuando hacia la pantalla
       ctx.save();
-      ctx.translate(-122, 25);
-      ctx.rotate(-0.65 + wave);
-      roundRect(-18, 0, 34, 95, 16, '#f8fafc', '#94a3b8', 2.5);
-      ctx.fillStyle = '#10b981';
+      ctx.translate(82, 16);
+      const reachAngle = -0.25 + Math.sin(sec * 4.2) * 0.16;
+      ctx.rotate(reachAngle);
+      roundRect(0, -12, 118, 26, 13, '#f8fafc', '#94a3b8', 2.5);
+      ctx.fillStyle = '#22d3ee';
       ctx.beginPath();
-      ctx.arc(0, 102, 18, 0, Math.PI * 2);
+      ctx.arc(124, 1, 15, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // TABLET sostenida al frente / derecha donde corre la app
-      const tabX = -225;
-      const tabY = -215;
-      const tabW = 540;
-      const tabH = 740;
+      ctx.restore();
 
-      // Marco de la tablet
-      roundRect(tabX, tabY, tabW, tabH, 42, '#0f172a', '#38bdf8', 5);
-      // Cámara frontal y botón home sutil
-      ctx.fillStyle = '#475569';
+      // Línea sutil de interacción / señal desde el robot hacia la pantalla
+      const handWorldX = rx + 175 * scale;
+      const handWorldY = ry + 10 * scale;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.35)';
+      ctx.setLineDash([10, 10]);
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(tabX + tabW / 2, tabY + 22, 6, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Pantalla interior activa de la app
-      drawInsideAppScreen(tabX + 22, tabY + 44, tabW - 44, tabH - 84, sec, appMode);
-
-      // Mano mecánica del robot sujetando el borde derecho de la tablet
-      roundRect(tabX + tabW - 14, tabY + 220, 44, 140, 18, '#f1f5f9', '#94a3b8', 3);
-      for (let f = 0; f < 3; f++) {
-        roundRect(tabX + tabW - 22, tabY + 240 + f * 38, 22, 18, 8, '#0284c7');
-      }
-
+      ctx.moveTo(handWorldX, handWorldY);
+      ctx.lineTo(targetScreenX, targetScreenY);
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -416,7 +450,6 @@
       const t = Math.min(elapsed, DURATION);
       const sec = t / 1000;
 
-      // Botón clicable de WhatsApp visible en el cierre (21s a 25s)
       waBtn.style.display = sec >= 21 ? 'flex' : 'none';
 
       const bg = ctx.createLinearGradient(0, 0, 0, 1920);
@@ -428,68 +461,51 @@
 
       drawTopHeader(sec);
 
-      // Titular superior claro sobre la app en pantalla
-      if (sec < 10.5) {
-        drawTextBlock(
-          'Mira cómo funciona la app en pantalla',
-          540, 205, 960, 56, '900 46px system-ui', '#ffffff', 'center'
-        );
-        drawTextBlock(
-          'Menú digital interactivo + pedido directo a WhatsApp (marca demo: Alba & Grano)',
-          540, 260, 960, 36, '600 27px system-ui', '#22d3ee', 'center'
-        );
+      const mode = sec < 10.5 ? 'menu' : (sec < 17 ? 'loyalty' : 'menu');
 
-        // Robot moviéndose y sosteniendo la pantalla con el menú digital en vivo
-        drawRobotHoldingTablet(575, 760, sec, 1.05, 'menu');
+      drawTextBlock(
+        mode === 'menu'
+          ? 'El robot opera el menú digital en pantalla'
+          : 'Fidelización en vivo dentro de la app',
+        540, 202, 960, 54, '900 44px system-ui', '#ffffff', 'center'
+      );
+      drawTextBlock(
+        mode === 'menu'
+          ? 'Marca demo: Alba & Grano • Pedido directo a WhatsApp'
+          : 'Suma visitas, desbloquea premios y retiene clientes',
+        540, 255, 960, 34, '600 26px system-ui', '#22d3ee', 'center'
+      );
 
-        drawTextBlock(
-          'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1480, 940, 62, '800 48px system-ui', '#ffffff', 'center'
-        );
-        drawTextBlock(
-          'Sin comisiones por pedido • Actualiza precios y platos al instante',
-          540, 1635, 920, 42, '600 31px system-ui', '#fbbf24', 'center'
-        );
+      // Si estamos en el cierre (21s - 25s), mostramos el logo oficial arriba
+      let screenTop = 330;
+      let screenH = 980;
+      let robotY = 1040;
+
+      if (sec >= 17) {
+        drawLogoFitted(540, 355, 290, 130, '#ffffff');
+        screenTop = 450;
+        screenH = 760;
+        robotY = 1030;
       }
-      // 10.5s - 17s: Fidelización dentro de la pantalla que sostiene el robot
-      else if (sec < 17) {
-        drawTextBlock(
-          'Fidelización activa dentro de la app',
-          540, 205, 960, 56, '900 46px system-ui', '#ffffff', 'center'
-        );
-        drawTextBlock(
-          'El robot muestra cómo el cliente suma visitas y desbloquea premios',
-          540, 260, 960, 36, '600 27px system-ui', '#fbbf24', 'center'
-        );
 
-        drawRobotHoldingTablet(575, 760, sec, 1.05, 'loyalty');
+      // Pantalla grande a la derecha donde funciona la app
+      const screenX = 415;
+      const screenW = 610;
+      drawAppScreen(screenX, screenTop, screenW, screenH, sec, mode);
 
-        drawTextBlock(
-          'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1480, 940, 62, '800 48px system-ui', '#ffffff', 'center'
-        );
-        drawTextBlock(
-          'Convierte compras ocasionales en clientes recurrentes',
-          540, 1635, 920, 42, '600 31px system-ui', '#34d399', 'center'
-        );
-      }
-      // 17s - 25s: Ecosistema AbbaMend + Cierre con Logo + Robot + CTA WhatsApp
-      else {
-        drawTextBlock(
-          'Automatización, apps y software a medida',
-          540, 205, 960, 56, '900 44px system-ui', '#ffffff', 'center'
-        );
-        drawTextBlock(
-          'Con el respaldo de AbbaMend Full-Stack AI Builder',
-          540, 258, 960, 36, '700 28px system-ui', '#22d3ee', 'center'
-        );
+      // Robot bien visible a la izquierda moviéndose e interactuando con la pantalla
+      drawActiveRobot(215, robotY, sec, 1.05, screenX + 35, screenTop + screenH * 0.45);
 
-        drawLogoFitted(540, 395, 360, 180, '#ffffff');
-        drawRobotHoldingTablet(575, 845, sec, 0.92, 'menu');
+      // Frase principal solicitada
+      drawTextBlock(
+        'Tu negocio vende mejor con una app así; fideliza tus clientes',
+        540, 1435, 940, 62, '800 48px system-ui', '#ffffff', 'center'
+      );
 
+      if (sec < 21) {
         drawTextBlock(
-          'Tu negocio vende mejor con una app así; fideliza tus clientes',
-          540, 1450, 940, 56, '800 42px system-ui', '#ffffff', 'center'
+          'Automatización, apps web y software a medida con AbbaMend',
+          540, 1605, 920, 42, '600 31px system-ui', '#fbbf24', 'center'
         );
       }
     }
@@ -526,7 +542,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-robot-app-menu-25s.webm';
+        a.download = 'abbamend-robot-interactivo-25s.webm';
         a.click();
         statusEl.textContent = '¡Video descargado! Listo para convertir a .mp4 o publicar.';
       };
@@ -536,8 +552,8 @@
       playAnimation(() => recorder.stop());
     };
 
-    // Inicia en el segundo 6 para ver al robot sosteniendo la pantalla con el menú activo
-    renderFrame(6000);
+    // Inicia en el segundo 4.5 para ver al robot interactuando con la app desde el primer vistazo
+    renderFrame(4500);
   </script>
 </body>
 </html>
