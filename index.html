@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo 4K — Estilo Teléfono Celular + App Grande</title>
+  <title>AbbaMend Promo 4K — Estilo Teléfono Celular + Logo Inferior</title>
   <style>
     body {
       margin: 0;
@@ -35,7 +35,7 @@
     #waCtaOverlay {
       position: absolute;
       left: 50%;
-      top: 90.5%;
+      top: 91.5%;
       transform: translate(-50%, -50%);
       width: 82%;
       padding: 13px 18px;
@@ -123,7 +123,7 @@
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend.png cargado. Vista tipo celular lista en 4K.';
+      statusEl.textContent = 'Logo logoAbbaMend.png cargado. Listo para grabar en 4K.';
       renderFrame(performance.now() - (startTime || performance.now()));
     };
 
@@ -190,20 +190,15 @@
       ctx.restore();
     }
 
-    // Pantalla con apariencia de teléfono celular y app de gran formato
     function drawAppScreen(x, y, w, h, sec, mode = 'menu') {
       ctx.save();
 
-      // Bisel exterior metálico del celular
       roundRect(x - 24, y - 24, w + 48, h + 48, 56, '#111827', '#38bdf8', 5);
-      // Bisel interior negro de pantalla
       roundRect(x - 10, y - 10, w + 20, h + 20, 44, '#030712', '#1e293b', 2);
 
-      // Área interior de la app
       roundRect(x, y, w, h, 36, '#faf5ef');
       ctx.clip();
 
-      // Barra superior tipo celular con notch/cámara sutil centrada
       const notchW = 148;
       const notchH = 24;
       roundRect(x + w / 2 - notchW / 2, y + 6, notchW, notchH, 12, '#111827');
@@ -346,13 +341,12 @@
         );
       }
 
-      // Barra inferior tipo *home indicator* del celular
       roundRect(x + w / 2 - 90, y + h - 22, 180, 8, 4, '#334155');
 
       ctx.restore();
     }
 
-    function drawActiveRobot(cx, cy, sec, scale = 0.62, targetScreenX = 240, targetScreenY = 850) {
+    function drawActiveRobot(cx, cy, sec, scale = 0.56, targetScreenX = 240, targetScreenY = 850) {
       const walkX = Math.sin(sec * 2.2) * 10;
       const bounceY = Math.abs(Math.sin(sec * 4.4)) * -7;
       const legSwing = Math.sin(sec * 4.4) * 0.30;
@@ -362,7 +356,6 @@
       const rx = cx + walkX;
       const ry = cy + bounceY;
 
-      // Logo grande y bien visible encima de la cabeza del robot
       const logoAboveY = ry - 275 * scale + Math.sin(sec * 3.5) * 4;
       drawLogoFitted(rx + 18, logoAboveY, 330 * scale, 190 * scale, null, 30);
 
@@ -503,7 +496,6 @@
 
       const mode = sec < 10.5 ? 'menu' : (sec < 17 ? 'loyalty' : 'menu');
 
-      // Título superior compacto para que la pantalla estilo teléfono empiece justo debajo
       drawTextBlock(
         mode === 'menu'
           ? 'Tu menú digital que vende y suma puntos solo'
@@ -511,7 +503,6 @@
         540, 174, 990, 44, '900 40px system-ui', '#ffffff', 'center'
       );
 
-      // Pantalla de la app más grande y con aspecto de teléfono celular, empezando un poco más abajo de las letras superiores
       const screenX = 215;
       const screenW = 825;
       const screenTop = 268;
@@ -522,20 +513,13 @@
 
       drawActiveRobot(102, robotY, sec, 0.56, screenX + 12, screenTop + screenH * 0.45);
 
-      // Texto inferior recorrido más abajo
       drawTextBlock(
         'Tu negocio vende mejor con una app así; fideliza tus clientes',
-        540, 1525, 970, 56, '800 45px system-ui', '#ffffff', 'center'
+        540, 1510, 970, 54, '800 44px system-ui', '#ffffff', 'center'
       );
 
-      if (sec < 21) {
-        drawTextBlock(
-          mode === 'loyalty'
-            ? 'Ejemplo: ganó 1 café pasado + empanada gratis por sus puntos'
-            : 'Más pedidos directos por WhatsApp y clientes recurrentes',
-          540, 1665, 950, 38, '600 28px system-ui', '#fbbf24', 'center'
-        );
-      }
+      // Logo de AbbaMend en la parte inferior antes del despliegue del botón de WhatsApp
+      drawLogoFitted(540, 1682, 230, 102, null, 28);
 
       ctx.restore();
     }
@@ -583,7 +567,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-4k-celular-25s.webm';
+        a.download = 'abbamend-promo-4k-final-25s.webm';
         a.click();
         statusEl.textContent = '¡Video Ultra HD 4K descargado!';
       };
