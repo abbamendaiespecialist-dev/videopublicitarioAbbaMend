@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo 4K — Logo Inferior Grande + Segundo Robot</title>
+  <title>AbbaMend Promo 4K — Logo y Robot Inferiores Grandes</title>
   <style>
     body {
       margin: 0;
@@ -35,9 +35,9 @@
     #waCtaOverlay {
       position: absolute;
       left: 50%;
-      top: 92.2%;
+      top: 93.2%;
       transform: translate(-50%, -50%);
-      width: 82%;
+      width: 84%;
       padding: 13px 18px;
       border-radius: 999px;
       background: #10b981;
@@ -182,7 +182,7 @@
       }
 
       ctx.save();
-      ctx.shadowColor = 'rgba(34, 211, 238, 0.5)';
+      ctx.shadowColor = 'rgba(34, 211, 238, 0.55)';
       ctx.shadowBlur = glowStrength;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 5;
@@ -190,38 +190,38 @@
       ctx.restore();
     }
 
-    // Logo inferior más grande y animado (flotación + pulso sutil)
+    // Logo inferior de gran tamaño y movimiento dinámico
     function drawAnimatedBottomLogo(cx, cy, sec) {
-      const floatY = Math.sin(sec * 3.8) * 9;
-      const swayX = Math.cos(sec * 2.2) * 8;
-      const pulseScale = 1 + Math.sin(sec * 4.5) * 0.04;
+      const floatY = Math.sin(sec * 3.8) * 11;
+      const swayX = Math.cos(sec * 2.2) * 10;
+      const pulseScale = 1 + Math.sin(sec * 4.5) * 0.05;
 
       ctx.save();
       ctx.translate(cx + swayX, cy + floatY);
       ctx.scale(pulseScale, pulseScale);
-      drawLogoFitted(0, 0, 315, 145, null, 38);
+      drawLogoFitted(0, 0, 500, 235, null, 45);
       ctx.restore();
     }
 
-    // Segundo robot de estilo distinto (chasis angular táctico/industrial con visor escáner y brazos articulados)
-    function drawSecondaryRobot(cx, cy, sec, scale = 0.55) {
-      const bobY = Math.sin(sec * 4.2) * 10;
-      const slideX = Math.cos(sec * 2.5) * 12;
-      const scanOffset = Math.sin(sec * 5.5) * 16;
-      const armLeftAngle = -0.5 + Math.sin(sec * 6.0) * 0.35;
-      const armRightAngle = 0.5 - Math.sin(sec * 6.0) * 0.35;
+    // Segundo robot de estilo táctico/industrial en gran escala y movimiento
+    function drawSecondaryRobot(cx, cy, sec, scale = 0.96) {
+      const bobY = Math.sin(sec * 4.2) * 12;
+      const slideX = Math.cos(sec * 2.5) * 14;
+      const scanOffset = Math.sin(sec * 5.5) * 18;
+      const armLeftAngle = -0.5 + Math.sin(sec * 6.0) * 0.38;
+      const armRightAngle = 0.5 - Math.sin(sec * 6.0) * 0.38;
 
       ctx.save();
       ctx.translate(cx + slideX, cy + bobY);
       ctx.scale(scale, scale);
 
       // Resplandor ámbar/cian bajo el robot secundario
-      const glow = ctx.createRadialGradient(0, 125, 6, 0, 125, 95);
-      glow.addColorStop(0, 'rgba(245, 158, 11, 0.38)');
+      const glow = ctx.createRadialGradient(0, 128, 8, 0, 128, 110);
+      glow.addColorStop(0, 'rgba(245, 158, 11, 0.45)');
       glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
       ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.ellipse(0, 125, 95, 18, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 128, 110, 22, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Antena doble con puntas luminosas
@@ -229,18 +229,18 @@
       ctx.lineWidth = 5;
       ctx.beginPath();
       ctx.moveTo(-24, -68);
-      ctx.lineTo(-36, -102);
+      ctx.lineTo(-36, -104);
       ctx.moveTo(24, -68);
-      ctx.lineTo(36, -102);
+      ctx.lineTo(36, -104);
       ctx.stroke();
 
       ctx.fillStyle = '#22d3ee';
       ctx.beginPath();
-      ctx.arc(-36, -106, 7, 0, Math.PI * 2);
+      ctx.arc(-36, -108, 8, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#f59e0b';
       ctx.beginPath();
-      ctx.arc(36, -106, 7, 0, Math.PI * 2);
+      ctx.arc(36, -108, 8, 0, Math.PI * 2);
       ctx.fill();
 
       // Cabeza cuadrada/angular tipo dron-bot
@@ -346,7 +346,7 @@
         let count = 0;
         let pointsEarned = 0;
         const listY = bodyY + bodyH * 0.22;
-        const itemH = Math.min(195, (bodyH * 0.58) / 3);
+        const itemH = Math.min(185, (bodyH * 0.58) / 3);
 
         let activeTapY = null;
 
@@ -363,9 +363,9 @@
           }
 
           roundRect(x + 22, iy, w - 44, itemH, 20, picked ? '#ecfdf5' : '#ffffff', picked ? '#10b981' : '#e5d8c8', 3);
-          drawTextBlock(it.name, x + 42, iy + 48, w * 0.66, 32, '800 27px system-ui', '#1c1917', 'left');
-          drawTextBlock(it.sub, x + 42, iy + 84, w * 0.66, 26, '700 21px system-ui', '#7c2d12', 'left');
-          drawTextBlock(it.price, x + 42, iy + itemH - 20, 220, 30, '900 28px system-ui', '#047857', 'left');
+          drawTextBlock(it.name, x + 42, iy + 46, w * 0.66, 32, '800 27px system-ui', '#1c1917', 'left');
+          drawTextBlock(it.sub, x + 42, iy + 80, w * 0.66, 26, '700 21px system-ui', '#7c2d12', 'left');
+          drawTextBlock(it.price, x + 42, iy + itemH - 18, 220, 30, '900 28px system-ui', '#047857', 'left');
 
           roundRect(x + w - 192, iy + itemH * 0.26, 148, itemH * 0.48, 16, picked ? '#10b981' : '#2c1810');
           drawTextBlock(picked ? '✓ Sumado' : '+ Pedir', x + w - 118, iy + itemH * 0.56, 134, 28, '900 22px system-ui', picked ? '#042316' : '#ffffff', 'center');
@@ -380,13 +380,13 @@
           ctx.stroke();
         }
 
-        const barY = y + h - 122;
-        roundRect(x + 22, barY, w - 44, 78, 20, count > 0 ? '#15803d' : '#2c1810');
+        const barY = y + h - 116;
+        roundRect(x + 22, barY, w - 44, 74, 20, count > 0 ? '#15803d' : '#2c1810');
         drawTextBlock(
           `WhatsApp (${count}) • $${total.toFixed(2)} (+${pointsEarned} pts)`,
-          x + 42, barY + 48, w * 0.74, 30, '800 24px system-ui', '#ffffff', 'left'
+          x + 42, barY + 46, w * 0.74, 30, '800 24px system-ui', '#ffffff', 'left'
         );
-        drawTextBlock('Enviar →', x + w - 120, barY + 48, 102, 30, '900 24px system-ui', '#dcfce7', 'center');
+        drawTextBlock('Enviar →', x + w - 120, barY + 46, 102, 30, '900 24px system-ui', '#dcfce7', 'center');
       } else {
         const visits = Math.min(5, Math.floor((sec - 10.5) * 1.15) + 1);
         const unlocked = visits === 5;
@@ -608,9 +608,9 @@
 
       const screenX = 215;
       const screenW = 825;
-      const screenTop = 268;
-      const screenH = 1125;
-      const robotY = 980;
+      const screenTop = 264;
+      const screenH = 1060;
+      const robotY = 950;
 
       drawAppScreen(screenX, screenTop, screenW, screenH, sec, mode);
 
@@ -618,12 +618,12 @@
 
       drawTextBlock(
         'Tu negocio vende mejor con una app así; fideliza tus clientes',
-        540, 1495, 970, 52, '800 43px system-ui', '#ffffff', 'center'
+        540, 1415, 970, 50, '800 42px system-ui', '#ffffff', 'center'
       );
 
-      // Logo grande y en movimiento en la parte inferior + segundo robot de otro estilo a su lado
-      drawAnimatedBottomLogo(455, 1665, sec);
-      drawSecondaryRobot(820, 1645, sec, 0.62);
+      // Logo mucho más grande y moviéndose + segundo robot de gran tamaño a su lado
+      drawAnimatedBottomLogo(390, 1625, sec);
+      drawSecondaryRobot(830, 1615, sec, 0.96);
 
       ctx.restore();
     }
@@ -671,7 +671,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-4k-dos-robots-25s.webm';
+        a.download = 'abbamend-promo-4k-final-25s.webm';
         a.click();
         statusEl.textContent = '¡Video Ultra HD 4K descargado!';
       };
