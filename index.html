@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo 4K — Estilo Teléfono Celular + Logo Inferior</title>
+  <title>AbbaMend Promo 4K — Logo Inferior Grande + Segundo Robot</title>
   <style>
     body {
       margin: 0;
@@ -35,7 +35,7 @@
     #waCtaOverlay {
       position: absolute;
       left: 50%;
-      top: 91.5%;
+      top: 92.2%;
       transform: translate(-50%, -50%);
       width: 82%;
       padding: 13px 18px;
@@ -187,6 +187,109 @@
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 5;
       ctx.drawImage(abbaLogo, cx - w / 2, cy - h / 2, w, h);
+      ctx.restore();
+    }
+
+    // Logo inferior más grande y animado (flotación + pulso sutil)
+    function drawAnimatedBottomLogo(cx, cy, sec) {
+      const floatY = Math.sin(sec * 3.8) * 9;
+      const swayX = Math.cos(sec * 2.2) * 8;
+      const pulseScale = 1 + Math.sin(sec * 4.5) * 0.04;
+
+      ctx.save();
+      ctx.translate(cx + swayX, cy + floatY);
+      ctx.scale(pulseScale, pulseScale);
+      drawLogoFitted(0, 0, 315, 145, null, 38);
+      ctx.restore();
+    }
+
+    // Segundo robot de estilo distinto (chasis angular táctico/industrial con visor escáner y brazos articulados)
+    function drawSecondaryRobot(cx, cy, sec, scale = 0.55) {
+      const bobY = Math.sin(sec * 4.2) * 10;
+      const slideX = Math.cos(sec * 2.5) * 12;
+      const scanOffset = Math.sin(sec * 5.5) * 16;
+      const armLeftAngle = -0.5 + Math.sin(sec * 6.0) * 0.35;
+      const armRightAngle = 0.5 - Math.sin(sec * 6.0) * 0.35;
+
+      ctx.save();
+      ctx.translate(cx + slideX, cy + bobY);
+      ctx.scale(scale, scale);
+
+      // Resplandor ámbar/cian bajo el robot secundario
+      const glow = ctx.createRadialGradient(0, 125, 6, 0, 125, 95);
+      glow.addColorStop(0, 'rgba(245, 158, 11, 0.38)');
+      glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.ellipse(0, 125, 95, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Antena doble con puntas luminosas
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(-24, -68);
+      ctx.lineTo(-36, -102);
+      ctx.moveTo(24, -68);
+      ctx.lineTo(36, -102);
+      ctx.stroke();
+
+      ctx.fillStyle = '#22d3ee';
+      ctx.beginPath();
+      ctx.arc(-36, -106, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(36, -106, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cabeza cuadrada/angular tipo dron-bot
+      roundRect(-54, -68, 108, 66, 16, '#1e293b', '#38bdf8', 3);
+      // Visor horizontal con escáner animado
+      roundRect(-42, -50, 84, 30, 10, '#090d16', '#0f172a', 2);
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect(-14 + scanOffset, -43, 28, 16, 7);
+      ctx.fill();
+
+      // Cuello mecánico
+      roundRect(-22, -2, 44, 16, 5, '#475569');
+
+      // Brazo izquierdo articulado
+      ctx.save();
+      ctx.translate(-68, 26);
+      ctx.rotate(armLeftAngle);
+      roundRect(-12, 0, 22, 64, 9, '#334155', '#38bdf8', 2);
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(-1, 68, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Brazo derecho articulado
+      ctx.save();
+      ctx.translate(68, 26);
+      ctx.rotate(armRightAngle);
+      roundRect(-10, 0, 22, 64, 9, '#334155', '#38bdf8', 2);
+      ctx.fillStyle = '#22d3ee';
+      ctx.beginPath();
+      ctx.arc(1, 68, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Torso blindado con hombreras
+      roundRect(-62, 14, 124, 84, 20, '#0f172a', '#f59e0b', 3);
+      roundRect(-78, 14, 24, 36, 8, '#0284c7');
+      roundRect(54, 14, 24, 36, 8, '#0284c7');
+
+      // Panel central en el pecho
+      roundRect(-34, 30, 68, 48, 10, '#1e293b', '#22d3ee', 2);
+      drawTextBlock('AI', 0, 62, 60, 26, '900 24px system-ui', '#fbbf24', 'center');
+
+      // Base propulsora / patas compactas
+      roundRect(-42, 98, 28, 22, 6, '#334155');
+      roundRect(14, 98, 28, 22, 6, '#334155');
+
       ctx.restore();
     }
 
@@ -506,7 +609,7 @@
       const screenX = 215;
       const screenW = 825;
       const screenTop = 268;
-      const screenH = 1135;
+      const screenH = 1125;
       const robotY = 980;
 
       drawAppScreen(screenX, screenTop, screenW, screenH, sec, mode);
@@ -515,11 +618,12 @@
 
       drawTextBlock(
         'Tu negocio vende mejor con una app así; fideliza tus clientes',
-        540, 1510, 970, 54, '800 44px system-ui', '#ffffff', 'center'
+        540, 1495, 970, 52, '800 43px system-ui', '#ffffff', 'center'
       );
 
-      // Logo de AbbaMend en la parte inferior antes del despliegue del botón de WhatsApp
-      drawLogoFitted(540, 1682, 230, 102, null, 28);
+      // Logo grande y en movimiento en la parte inferior + segundo robot de otro estilo a su lado
+      drawAnimatedBottomLogo(455, 1665, sec);
+      drawSecondaryRobot(820, 1645, sec, 0.62);
 
       ctx.restore();
     }
@@ -567,7 +671,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-4k-final-25s.webm';
+        a.download = 'abbamend-promo-4k-dos-robots-25s.webm';
         a.click();
         statusEl.textContent = '¡Video Ultra HD 4K descargado!';
       };
