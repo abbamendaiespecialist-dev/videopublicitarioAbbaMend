@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo 4K — Pantalla Grande Para Móvil + Robot y Premios</title>
+  <title>AbbaMend Promo 4K — Estilo Teléfono Celular + App Grande</title>
   <style>
     body {
       margin: 0;
@@ -35,22 +35,24 @@
     #waCtaOverlay {
       position: absolute;
       left: 50%;
-      top: 88%;
+      top: 90.5%;
       transform: translate(-50%, -50%);
-      width: 76%;
-      padding: 15px 20px;
+      width: 82%;
+      padding: 13px 18px;
       border-radius: 999px;
       background: #10b981;
       color: #042316;
       font-weight: 900;
-      font-size: clamp(14px, 2.1vh, 21px);
+      font-size: clamp(12px, 1.75vh, 18px);
+      line-height: 1.15;
+      white-space: nowrap;
       text-align: center;
       text-decoration: none;
       box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45);
       display: none;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       cursor: pointer;
       z-index: 10;
       transition: transform 0.15s ease, background 0.15s ease;
@@ -121,7 +123,7 @@
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend.png cargado. Pantalla ampliada para lectura en celular.';
+      statusEl.textContent = 'Logo logoAbbaMend.png cargado. Vista tipo celular lista en 4K.';
       renderFrame(performance.now() - (startTime || performance.now()));
     };
 
@@ -188,41 +190,52 @@
       ctx.restore();
     }
 
-    // App de gran formato dentro de la pantalla para máxima legibilidad en celular
+    // Pantalla con apariencia de teléfono celular y app de gran formato
     function drawAppScreen(x, y, w, h, sec, mode = 'menu') {
       ctx.save();
-      roundRect(x - 16, y - 16, w + 32, h + 32, 38, '#0f172a', '#38bdf8', 5);
-      roundRect(x, y, w, h, 26, '#faf5ef');
+
+      // Bisel exterior metálico del celular
+      roundRect(x - 24, y - 24, w + 48, h + 48, 56, '#111827', '#38bdf8', 5);
+      // Bisel interior negro de pantalla
+      roundRect(x - 10, y - 10, w + 20, h + 20, 44, '#030712', '#1e293b', 2);
+
+      // Área interior de la app
+      roundRect(x, y, w, h, 36, '#faf5ef');
       ctx.clip();
 
-      const topH = Math.round(h * 0.125);
+      // Barra superior tipo celular con notch/cámara sutil centrada
+      const notchW = 148;
+      const notchH = 24;
+      roundRect(x + w / 2 - notchW / 2, y + 6, notchW, notchH, 12, '#111827');
+
+      const topH = Math.round(h * 0.115);
       roundRect(x, y, w, topH, 0, '#2c1810');
 
-      const rBadge = Math.min(34, Math.round(topH * 0.34));
+      const rBadge = Math.min(36, Math.round(topH * 0.30));
       ctx.beginPath();
-      ctx.arc(x + 52, y + topH / 2, rBadge, 0, Math.PI * 2);
+      ctx.arc(x + 56, y + topH * 0.58, rBadge, 0, Math.PI * 2);
       ctx.fillStyle = '#f59e0b';
       ctx.fill();
-      drawTextBlock('AG', x + 52, y + topH / 2 + 10, rBadge * 1.8, 28, '900 24px system-ui', '#2c1810', 'center');
+      drawTextBlock('AG', x + 56, y + topH * 0.58 + 9, rBadge * 1.8, 28, '900 24px system-ui', '#2c1810', 'center');
 
-      drawTextBlock('ALBA & GRANO', x + 98, y + topH / 2 - 4, w * 0.56, 32, '900 30px system-ui', '#ffffff', 'left');
-      drawTextBlock('Menú Digital & Puntos', x + 98, y + topH / 2 + 28, w * 0.56, 24, '600 20px system-ui', '#fde68a', 'left');
+      drawTextBlock('ALBA & GRANO', x + 104, y + topH * 0.52, w * 0.52, 32, '900 31px system-ui', '#ffffff', 'left');
+      drawTextBlock('Menú Digital & Puntos', x + 104, y + topH * 0.80, w * 0.52, 24, '600 20px system-ui', '#fde68a', 'left');
 
-      roundRect(x + w - 195, y + topH * 0.22, 170, topH * 0.56, 16, mode === 'menu' ? '#10b981' : '#f59e0b');
+      roundRect(x + w - 200, y + topH * 0.34, 174, topH * 0.48, 16, mode === 'menu' ? '#10b981' : '#f59e0b');
       drawTextBlock(
         mode === 'menu' ? '● Carta' : '★ Premio',
-        x + w - 110, y + topH / 2 + 9, 150, 26, '900 22px system-ui',
+        x + w - 113, y + topH * 0.65, 154, 26, '900 22px system-ui',
         mode === 'menu' ? '#042316' : '#2c1810', 'center'
       );
 
-      const bodyY = y + topH + 18;
-      const bodyH = h - topH - 30;
+      const bodyY = y + topH + 20;
+      const bodyH = h - topH - 56;
 
       if (mode === 'menu') {
-        roundRect(x + 20, bodyY, w - 40, bodyH * 0.22, 20, '#f3e7d8', '#e2d0b9', 2);
-        drawTextBlock('ALBA & GRANO • MARCA DEMO', x + 40, bodyY + 34, w - 80, 24, '800 18px system-ui', '#7c2d12', 'left');
-        drawTextBlock('Pide fácil y acumula puntos hoy', x + 40, bodyY + 74, w - 80, 36, '900 31px system-ui', '#1c1917', 'left');
-        drawTextBlock('Cada pedido suma para café y bocados gratis', x + 40, bodyY + bodyH * 0.22 - 16, w - 80, 24, '600 20px system-ui', '#57534e', 'left');
+        roundRect(x + 22, bodyY, w - 44, bodyH * 0.19, 22, '#f3e7d8', '#e2d0b9', 2);
+        drawTextBlock('ALBA & GRANO • MARCA DEMO', x + 42, bodyY + 34, w - 84, 24, '800 18px system-ui', '#7c2d12', 'left');
+        drawTextBlock('Pide fácil y acumula puntos hoy', x + 42, bodyY + 74, w - 84, 36, '900 32px system-ui', '#1c1917', 'left');
+        drawTextBlock('Cada pedido suma para café y bocados gratis', x + 42, bodyY + bodyH * 0.19 - 16, w - 84, 24, '600 21px system-ui', '#57534e', 'left');
 
         const items = [
           { name: 'Combo Desayuno Alba', sub: '+20 pts • Tigrillo + Café pasado', price: '$4.50', at: 1.0 },
@@ -234,13 +247,13 @@
         let total = 0;
         let count = 0;
         let pointsEarned = 0;
-        const listY = bodyY + bodyH * 0.25;
-        const itemH = Math.min(148, (bodyH * 0.52) / 3);
+        const listY = bodyY + bodyH * 0.22;
+        const itemH = Math.min(195, (bodyH * 0.58) / 3);
 
         let activeTapY = null;
 
         items.forEach((it, idx) => {
-          const iy = listY + idx * (itemH + 14);
+          const iy = listY + idx * (itemH + 16);
           const picked = localT >= it.at;
           const justTapped = localT >= it.at && localT < it.at + 0.65;
           if (justTapped) activeTapY = iy + itemH * 0.52;
@@ -251,69 +264,69 @@
             pointsEarned += idx === 0 ? 20 : 15;
           }
 
-          roundRect(x + 20, iy, w - 40, itemH, 18, picked ? '#ecfdf5' : '#ffffff', picked ? '#10b981' : '#e5d8c8', 3);
-          drawTextBlock(it.name, x + 38, iy + 42, w * 0.65, 30, '800 25px system-ui', '#1c1917', 'left');
-          drawTextBlock(it.sub, x + 38, iy + 74, w * 0.65, 25, '700 20px system-ui', '#7c2d12', 'left');
-          drawTextBlock(it.price, x + 38, iy + itemH - 16, 210, 28, '900 26px system-ui', '#047857', 'left');
+          roundRect(x + 22, iy, w - 44, itemH, 20, picked ? '#ecfdf5' : '#ffffff', picked ? '#10b981' : '#e5d8c8', 3);
+          drawTextBlock(it.name, x + 42, iy + 48, w * 0.66, 32, '800 27px system-ui', '#1c1917', 'left');
+          drawTextBlock(it.sub, x + 42, iy + 84, w * 0.66, 26, '700 21px system-ui', '#7c2d12', 'left');
+          drawTextBlock(it.price, x + 42, iy + itemH - 20, 220, 30, '900 28px system-ui', '#047857', 'left');
 
-          roundRect(x + w - 180, iy + itemH * 0.25, 140, itemH * 0.50, 14, picked ? '#10b981' : '#2c1810');
-          drawTextBlock(picked ? '✓ Sumado' : '+ Pedir', x + w - 110, iy + itemH * 0.57, 128, 26, '900 21px system-ui', picked ? '#042316' : '#ffffff', 'center');
+          roundRect(x + w - 192, iy + itemH * 0.26, 148, itemH * 0.48, 16, picked ? '#10b981' : '#2c1810');
+          drawTextBlock(picked ? '✓ Sumado' : '+ Pedir', x + w - 118, iy + itemH * 0.56, 134, 28, '900 22px system-ui', picked ? '#042316' : '#ffffff', 'center');
         });
 
         if (activeTapY !== null) {
-          const rippleR = 20 + ((localT % 0.65) / 0.65) * 34;
+          const rippleR = 22 + ((localT % 0.65) / 0.65) * 38;
           ctx.strokeStyle = 'rgba(6, 182, 212, 0.9)';
           ctx.lineWidth = 5;
           ctx.beginPath();
-          ctx.arc(x + w - 110, activeTapY, rippleR, 0, Math.PI * 2);
+          ctx.arc(x + w - 118, activeTapY, rippleR, 0, Math.PI * 2);
           ctx.stroke();
         }
 
-        const barY = y + h - 92;
-        roundRect(x + 20, barY, w - 40, 72, 18, count > 0 ? '#15803d' : '#2c1810');
+        const barY = y + h - 122;
+        roundRect(x + 22, barY, w - 44, 78, 20, count > 0 ? '#15803d' : '#2c1810');
         drawTextBlock(
           `WhatsApp (${count}) • $${total.toFixed(2)} (+${pointsEarned} pts)`,
-          x + 38, barY + 45, w * 0.72, 28, '800 23px system-ui', '#ffffff', 'left'
+          x + 42, barY + 48, w * 0.74, 30, '800 24px system-ui', '#ffffff', 'left'
         );
-        drawTextBlock('Enviar →', x + w - 115, barY + 45, 98, 28, '900 23px system-ui', '#dcfce7', 'center');
+        drawTextBlock('Enviar →', x + w - 120, barY + 48, 102, 30, '900 24px system-ui', '#dcfce7', 'center');
       } else {
         const visits = Math.min(5, Math.floor((sec - 10.5) * 1.15) + 1);
         const unlocked = visits === 5;
 
-        roundRect(x + 20, bodyY, w - 40, bodyH * 0.50, 22, '#2c1810');
-        drawTextBlock('PUNTOS Y BENEFICIOS DEL CLIENTE', x + 40, bodyY + 40, w - 80, 26, '800 19px system-ui', '#fbbf24', 'left');
-        drawTextBlock('ALBA & GRANO REWARDS', x + 40, bodyY + 80, w - 80, 36, '900 31px system-ui', '#ffffff', 'left');
+        roundRect(x + 22, bodyY, w - 44, bodyH * 0.48, 24, '#2c1810');
+        drawTextBlock('PUNTOS Y BENEFICIOS DEL CLIENTE', x + 42, bodyY + 44, w - 84, 28, '800 20px system-ui', '#fbbf24', 'left');
+        drawTextBlock('ALBA & GRANO REWARDS', x + 42, bodyY + 86, w - 84, 38, '900 34px system-ui', '#ffffff', 'left');
         drawTextBlock(
           unlocked
             ? '¡META CUMPLIDA! 50/50 PUNTOS'
             : `Acumulado: ${visits * 10} de 50 puntos`,
-          x + 40, bodyY + 122, w - 80, 28, '800 23px system-ui',
+          x + 42, bodyY + 130, w - 84, 30, '800 24px system-ui',
           unlocked ? '#34d399' : '#fde68a', 'left'
         );
 
-        const starY = bodyY + bodyH * 0.36;
-        const gap = (w - 120) / 4;
+        const starY = bodyY + bodyH * 0.35;
+        const gap = (w - 130) / 4;
         for (let i = 0; i < 5; i++) {
-          const sx = x + 60 + i * gap;
+          const sx = x + 65 + i * gap;
           const active = i < visits;
           ctx.beginPath();
-          ctx.arc(sx, starY, 34, 0, Math.PI * 2);
+          ctx.arc(sx, starY, 38, 0, Math.PI * 2);
           ctx.fillStyle = active ? '#f59e0b' : '#44271b';
           ctx.fill();
-          drawTextBlock(active ? '★' : `${(i + 1) * 10}`, sx, starY + 10, 56, 28, '900 21px system-ui', active ? '#2c1810' : '#d6d3d1', 'center');
+          drawTextBlock(active ? '★' : `${(i + 1) * 10}`, sx, starY + 11, 60, 30, '900 23px system-ui', active ? '#2c1810' : '#d6d3d1', 'center');
         }
 
-        const rewardY = bodyY + bodyH * 0.54;
+        const rewardY = bodyY + bodyH * 0.52;
         roundRect(
-          x + 20, rewardY, w - 40, bodyH * 0.43, 22,
+          x + 22, rewardY, w - 44, bodyH * 0.44, 24,
           unlocked ? '#ecfdf5' : '#ffffff',
           unlocked ? '#10b981' : '#e5d8c8',
-          unlocked ? 4 : 2.5
+          unlocked ? 4 : 3
         );
 
         drawTextBlock(
           unlocked ? '🎉 BENEFICIO DESBLOQUEADO' : 'PREMIO AL COMPLETAR TUS PUNTOS',
-          x + 40, rewardY + 40, w - 80, 26, '900 19px system-ui',
+          x + 42, rewardY + 46, w - 84, 28, '900 20px system-ui',
           unlocked ? '#047857' : '#7c2d12', 'left'
         );
 
@@ -321,24 +334,27 @@
           unlocked
             ? '¡Ganaste 1 Café Pasado + Empanada GRATIS!'
             : 'Gana 1 Café Pasado + Empanada GRATIS',
-          x + 40, rewardY + 86, w - 80, 38, '900 30px system-ui', '#1c1917', 'left'
+          x + 42, rewardY + 96, w - 84, 42, '900 33px system-ui', '#1c1917', 'left'
         );
 
         drawTextBlock(
           unlocked
             ? '✓ Canjeable hoy mismo en tu próxima visita'
             : 'Tus clientes vuelven solos para reclamar su premio',
-          x + 40, rewardY + bodyH * 0.43 - 26, w - 80, 26, '700 21px system-ui',
+          x + 42, rewardY + bodyH * 0.44 - 30, w - 84, 28, '700 22px system-ui',
           unlocked ? '#065f46' : '#57534e', 'left'
         );
       }
 
+      // Barra inferior tipo *home indicator* del celular
+      roundRect(x + w / 2 - 90, y + h - 22, 180, 8, 4, '#334155');
+
       ctx.restore();
     }
 
-    function drawActiveRobot(cx, cy, sec, scale = 0.72, targetScreenX = 320, targetScreenY = 920) {
-      const walkX = Math.sin(sec * 2.2) * 12;
-      const bounceY = Math.abs(Math.sin(sec * 4.4)) * -8;
+    function drawActiveRobot(cx, cy, sec, scale = 0.62, targetScreenX = 240, targetScreenY = 850) {
+      const walkX = Math.sin(sec * 2.2) * 10;
+      const bounceY = Math.abs(Math.sin(sec * 4.4)) * -7;
       const legSwing = Math.sin(sec * 4.4) * 0.30;
       const headTurn = Math.sin(sec * 2.8) * 0.14;
       const blink = (sec % 3.0) > 2.84;
@@ -346,9 +362,9 @@
       const rx = cx + walkX;
       const ry = cy + bounceY;
 
-      // Logo grande y bien visible encima de la cabeza del robot sin invadir la pantalla grande
+      // Logo grande y bien visible encima de la cabeza del robot
       const logoAboveY = ry - 275 * scale + Math.sin(sec * 3.5) * 4;
-      drawLogoFitted(rx + 25, logoAboveY, 340 * scale, 195 * scale, null, 32);
+      drawLogoFitted(rx + 18, logoAboveY, 330 * scale, 190 * scale, null, 30);
 
       ctx.save();
       ctx.translate(rx, ry);
@@ -457,24 +473,24 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, (Math.min(sec * 1000, DURATION) / DURATION) * 1080, 10);
 
-      roundRect(48, 24, 984, 108, 54, '#0f172a', '#1e293b', 2);
-      drawLogoFitted(110, 78, 100, 84, null, 20);
+      roundRect(48, 22, 984, 104, 52, '#0f172a', '#1e293b', 2);
+      drawLogoFitted(110, 74, 96, 80, null, 20);
 
-      drawTextBlock('AbbaMend', 172, 72, 510, 32, '800 29px system-ui', '#ffffff', 'left');
-      drawTextBlock('App Menú Digital • Puntos & Premios • Software IA', 172, 103, 540, 24, '500 20px system-ui', '#38bdf8', 'left');
+      drawTextBlock('AbbaMend', 170, 68, 510, 32, '800 29px system-ui', '#ffffff', 'left');
+      drawTextBlock('App Menú Digital • Puntos & Premios • Software IA', 170, 99, 540, 24, '500 20px system-ui', '#38bdf8', 'left');
 
-      roundRect(755, 46, 245, 64, 32, '#06b6d4');
-      drawTextBlock('Demo en Vivo', 877, 86, 220, 28, '800 23px system-ui', '#04131a', 'center');
+      roundRect(755, 42, 245, 64, 32, '#06b6d4');
+      drawTextBlock('Demo en Vivo', 877, 82, 220, 28, '800 23px system-ui', '#04131a', 'center');
     }
 
     function renderFrame(elapsed) {
       const t = Math.min(elapsed, DURATION);
       const sec = t / 1000;
 
+      waBtn.style.display = sec >= 21 ? 'flex' : 'none';
+
       ctx.save();
       ctx.scale(2, 2);
-
-      waBtn.style.display = sec >= 21 ? 'flex' : 'none';
 
       const bg = ctx.createLinearGradient(0, 0, 0, 1920);
       bg.addColorStop(0, '#050911');
@@ -487,27 +503,29 @@
 
       const mode = sec < 10.5 ? 'menu' : (sec < 17 ? 'loyalty' : 'menu');
 
+      // Título superior compacto para que la pantalla estilo teléfono empiece justo debajo
       drawTextBlock(
         mode === 'menu'
           ? 'Tu menú digital que vende y suma puntos solo'
           : 'Premia compras y haz que tus clientes vuelvan',
-        540, 180, 980, 50, '900 42px system-ui', '#ffffff', 'center'
+        540, 174, 990, 44, '900 40px system-ui', '#ffffff', 'center'
       );
 
-      // Pantalla de la app mucho más grande para leerse con claridad en celulares
-      const screenX = 265;
-      const screenW = 775;
-      const screenTop = 445;
-      const screenH = 910;
-      const robotY = 1045;
+      // Pantalla de la app más grande y con aspecto de teléfono celular, empezando un poco más abajo de las letras superiores
+      const screenX = 215;
+      const screenW = 825;
+      const screenTop = 268;
+      const screenH = 1135;
+      const robotY = 980;
 
       drawAppScreen(screenX, screenTop, screenW, screenH, sec, mode);
 
-      drawActiveRobot(135, robotY, sec, 0.72, screenX + 20, screenTop + screenH * 0.45);
+      drawActiveRobot(102, robotY, sec, 0.56, screenX + 12, screenTop + screenH * 0.45);
 
+      // Texto inferior recorrido más abajo
       drawTextBlock(
         'Tu negocio vende mejor con una app así; fideliza tus clientes',
-        540, 1445, 960, 62, '800 48px system-ui', '#ffffff', 'center'
+        540, 1525, 970, 56, '800 45px system-ui', '#ffffff', 'center'
       );
 
       if (sec < 21) {
@@ -515,7 +533,7 @@
           mode === 'loyalty'
             ? 'Ejemplo: ganó 1 café pasado + empanada gratis por sus puntos'
             : 'Más pedidos directos por WhatsApp y clientes recurrentes',
-          540, 1605, 940, 42, '600 30px system-ui', '#fbbf24', 'center'
+          540, 1665, 950, 38, '600 28px system-ui', '#fbbf24', 'center'
         );
       }
 
@@ -565,7 +583,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-4k-pantalla-grande-25s.webm';
+        a.download = 'abbamend-promo-4k-celular-25s.webm';
         a.click();
         statusEl.textContent = '¡Video Ultra HD 4K descargado!';
       };
@@ -575,7 +593,7 @@
       playAnimation(() => recorder.stop());
     };
 
-    renderFrame(14500);
+    renderFrame(22000);
   </script>
 </body>
 </html>
