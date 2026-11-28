@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AbbaMend Promo — Logo Grande Sobre el Robot + App en Pantalla</title>
+  <title>AbbaMend Promo 4K — Robot Interactuando + App en Pantalla</title>
   <style>
     body {
       margin: 0;
@@ -83,7 +83,7 @@
 <body>
 
   <div class="stage-wrapper">
-    <canvas id="stage" width="1080" height="1920"></canvas>
+    <canvas id="stage" width="2160" height="3840"></canvas>
     <a id="waCtaOverlay" target="_blank" rel="noopener noreferrer">
       Solicitar Demo por WhatsApp →
     </a>
@@ -91,9 +91,9 @@
 
   <div class="controls">
     <button id="btnPlay">▶ Vista Previa (25s)</button>
-    <button id="btnRecord">⏺ Grabar y Descargar (.webm)</button>
+    <button id="btnRecord">⏺ Grabar y Descargar 4K (.webm)</button>
   </div>
-  <div id="status">Cargando logoAbbaMend.png...</div>
+  <div id="status">Listo en Ultra HD 4K (2160x3840). Cargando logoAbbaMend.png...</div>
 
   <script>
     // =========================================================================
@@ -121,7 +121,7 @@
     let logoLoaded = false;
     abbaLogo.onload = () => {
       logoLoaded = true;
-      statusEl.textContent = 'Logo logoAbbaMend.png cargado con gran formato sobre el robot.';
+      statusEl.textContent = 'Logo logoAbbaMend.png cargado. Listo para exportar en 4K (2160x3840).';
       renderFrame(performance.now() - (startTime || performance.now()));
     };
 
@@ -301,7 +301,6 @@
       ctx.restore();
     }
 
-    // Robot moviéndose e interactuando con la pantalla + logo de AbbaMend bien grande encima de la cabeza
     function drawActiveRobot(cx, cy, sec, scale = 1, targetScreenX = 680, targetScreenY = 920) {
       const walkX = Math.sin(sec * 2.2) * 20;
       const bounceY = Math.abs(Math.sin(sec * 4.4)) * -10;
@@ -312,7 +311,7 @@
       const rx = cx + walkX;
       const ry = cy + bounceY;
 
-      // Logo de gran formato y alta legibilidad encima de la cabeza del robot
+      // Logo de gran formato encima de la cabeza del robot
       const logoAboveY = ry - 295 * scale + Math.sin(sec * 3.5) * 5;
       drawLogoFitted(rx + 25, logoAboveY, 395 * scale, 225 * scale, null, 36);
 
@@ -437,6 +436,10 @@
       const t = Math.min(elapsed, DURATION);
       const sec = t / 1000;
 
+      // Escalado 2x para exportar en Ultra HD 4K (2160x3840) manteniendo coordenadas base 1080x1920
+      ctx.save();
+      ctx.scale(2, 2);
+
       waBtn.style.display = sec >= 21 ? 'flex' : 'none';
 
       const bg = ctx.createLinearGradient(0, 0, 0, 1920);
@@ -457,7 +460,6 @@
         540, 188, 960, 50, '900 42px system-ui', '#ffffff', 'center'
       );
 
-      // Ampliamos margen superior para albergar el logotipo grande encima de la cabeza del robot sin choques
       const screenTop = 530;
       const screenH = 740;
       const robotY = 1055;
@@ -479,6 +481,8 @@
           540, 1605, 920, 42, '600 31px system-ui', '#fbbf24', 'center'
         );
       }
+
+      ctx.restore();
     }
 
     function playAnimation(onComplete) {
@@ -498,13 +502,24 @@
     }
 
     document.getElementById('btnPlay').onclick = () => {
-      statusEl.textContent = 'Reproduciendo vista previa (25s)...';
+      statusEl.textContent = 'Reproduciendo vista previa 4K (25s)...';
       playAnimation(() => { statusEl.textContent = 'Vista previa finalizada.'; });
     };
 
     document.getElementById('btnRecord').onclick = () => {
-      const stream = canvas.captureStream(60);
-      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      const stream = canvas.captureStream(30);
+      const options = {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 25000000
+      };
+
+      let recorder;
+      try {
+        recorder = new MediaRecorder(stream, options);
+      } catch (err) {
+        recorder = new MediaRecorder(stream);
+      }
+
       const chunks = [];
 
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
@@ -513,12 +528,12 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'abbamend-promo-logo-grande-25s.webm';
+        a.download = 'abbamend-promo-4k-2160x3840-25s.webm';
         a.click();
-        statusEl.textContent = '¡Video descargado! Listo para convertir a .mp4 o publicar.';
+        statusEl.textContent = '¡Video Ultra HD 4K descargado!';
       };
 
-      statusEl.textContent = 'Grabando 25 segundos en tiempo real... No cierres la pestaña.';
+      statusEl.textContent = 'Grabando 25s en Ultra HD 4K (2160x3840)... No cierres la pestaña.';
       recorder.start();
       playAnimation(() => recorder.stop());
     };
